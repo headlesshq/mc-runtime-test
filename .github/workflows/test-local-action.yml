@@ -44,13 +44,13 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 1
           ref: ${{ github.event.inputs.ref }}
 
       - name: Setup temurin-${{ env.java_version }}
-        uses: useblacksmith/setup-java@v5
+        uses: useblacksmith/setup-java@ffdcc086410416d16bc6eebdf2412fa3b37823d9 # v5
         with:
           java-version: ${{ env.java_version }}
           distribution: temurin

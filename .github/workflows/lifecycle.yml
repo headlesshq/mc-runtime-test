@@ -41,7 +41,7 @@ jobs:
       - if: github.event_name == 'push' # TODO: explicit on push to main
         id: release-please
         name: Run Release Please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -55,7 +55,7 @@ jobs:
       run-matrix: ${{ steps.matrices.outputs.run-matrix }}
     steps:
       - name: Checkout 
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 1
           ref: ${{ inputs.ref || github.ref }}
@@ -75,7 +75,7 @@ jobs:
       - if: github.event_name != 'workflow_dispatch'
         id: filter
         name: Filter
-        uses: dorny/paths-filter@v3.0.2
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         with:
           filters: |
             ${{ steps.paths.outputs.filter }}
@@ -224,12 +224,12 @@ jobs:
         xvfb: [true, false]
     steps:
       - name: Checkout # TODO: simplify away this step, currently needed for `uses: ./`
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 1
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
         with:
           name: jars-${{ matrix.version.mc }}
 
@@ -239,7 +239,7 @@ jobs:
           cp mc-runtime-test-*-${{ matrix.version.type }}-release.jar run/mods
 
       - name: Setup Java temurin-${{ matrix.version.java }}
-        uses: useblacksmith/setup-java@v5
+        uses: useblacksmith/setup-java@ffdcc086410416d16bc6eebdf2412fa3b37823d9 # v5
         with:
           java-version: ${{ matrix.version.java }}
           distribution: temurin
@@ -267,10 +267,10 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
 
       - name: Upload release artifacts
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: jars-*/*-release.jar
@@ -279,7 +279,7 @@ jobs:
           file_glob: true
 
       - name: Upload api artifacts
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: jars-*/*-api-*.jar # TODO: make API jar names consistent with release jars, then simplify away this step
@@ -295,7 +295,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Delete artifacts
-        uses: geekyeggo/delete-artifact@v5.1.0
+        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b # v5.1.0
         with:
           name: |
             jars-*

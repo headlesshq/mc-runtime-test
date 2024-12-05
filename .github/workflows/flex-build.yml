@@ -36,7 +36,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
         with:
           fetch-depth: 1
           sparse-checkout: |
@@ -45,21 +45,21 @@ jobs:
 
       - name: Cache build
         id: cache
-        uses: useblacksmith/cache@v5
+        uses: useblacksmith/cache@c5fe29eb0efdf1cf4186b9f7fcbbcbc0cf025662 # v5
         with:
           path: ${{ inputs.dir }}/build
           key: build-${{ hashFiles(format('{0}/[a-z]**', inputs.dir), 'api/**') }}
 
       - if: steps.cache.outputs.cache-hit != 'true'
         name: Setup Java
-        uses: useblacksmith/setup-java@v5
+        uses: useblacksmith/setup-java@ffdcc086410416d16bc6eebdf2412fa3b37823d9 # v5
         with:
           distribution: temurin
           java-version: ${{ inputs.java }}
 
       - if: steps.cache.outputs.cache-hit != 'true'
         name: Setup Gradle
-        uses: useblacksmith/setup-gradle/setup-gradle@v5
+        uses: useblacksmith/setup-gradle/setup-gradle@cae352faf4364352bc1f3d74728bb687aa57cf1d # v5
         with:
           workflow-job-context: '{}' # FIXME: avoid this cache duplication workaround
 
@@ -85,7 +85,7 @@ jobs:
 
       - if: inputs.upload
         name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: jars-${{ inputs.mc || inputs.dir }}${{ inputs.dir == 'gametest' && '-gametest' || '' }}
           path: ${{ inputs.dir }}/build/libs/*.jar

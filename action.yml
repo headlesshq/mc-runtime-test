@@ -68,7 +68,7 @@ runs:
 
     - if: inputs.download-hmc == 'true'
       name: Get HeadlessMC
-      uses: robinraju/release-downloader@v1.11
+      uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
       with:
         repository: 3arthqu4ke/headlessmc
         tag: ${{ inputs.hmc-version }}
@@ -76,7 +76,7 @@ runs:
 
     - if: inputs.cache-mc == 'true'
       name: Cache Minecraft
-      uses: useblacksmith/cache@v5
+      uses: useblacksmith/cache@c5fe29eb0efdf1cf4186b9f7fcbbcbc0cf025662 # v5
       with:
         path: /home/runner/.minecraft
         key: hmc-${{ inputs.modloader }}-${{ inputs.mc }}
@@ -92,7 +92,7 @@ runs:
     - id: get-mcrt
       if: inputs.mc-runtime-test != 'none'
       name: Get mc-runtime-test
-      uses: robinraju/release-downloader@v1.11
+      uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
       with:
         repository: headlesshq/mc-runtime-test
         tag: "3.0.0" # x-release-please-version
