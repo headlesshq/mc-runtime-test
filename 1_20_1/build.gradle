@@ -200,8 +200,7 @@ afterEvaluate {
             if (System.getenv('DEPLOY_TO_GITHUB_PACKAGES_URL') == null) {
                 maven {
                     name = 'BuildDirMaven'
-                    // this project is in 1_20/1_20_1, so use parent twice
-                    url = rootProject.projectDir.toPath().parent.parent.resolve('build').resolve('maven')
+                    url = rootProject.projectDir.toPath().parent.resolve('build').resolve('maven')
                 }
             } else {
                 maven {
