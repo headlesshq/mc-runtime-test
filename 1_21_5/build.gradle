@@ -1,0 +1,251 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+    id 'maven-publish'
+    id 'xyz.wagyourtail.unimined' version '1.3.10-SNAPSHOT'
+}
+
+group 'me.earth'
+version "$minecraft_version-${project(':api').project_version}"
+
+base {
+    archivesName = 'mc-runtime-test'
+}
+
+sourceSets {
+    fabric
+    neoforge
+    lexforge
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = "https://maven.neoforged.net/releases"
+    }
+    maven {
+        url = "https://maven.fabricmc.net/"
+    }
+    maven {
+        url = "https://files.minecraftforge.net/maven"
+    }
+    maven {
+        name = "sponge"
+        url = "https://repo.spongepowered.org/maven"
+    }
+    maven {
+        url = "https://maven.wagyourtail.xyz/releases"
+    }
+
+    maven {
+        name = '3arthMaven'
+        url = 'https://3arthqu4ke.github.io/maven'
+    }
+}
+
+unimined.minecraft {
+    version project.minecraft_version
+
+    mappings {
+        mojmap()
+        // intermediary()
+        // yarn(1)
+
+        devFallbackNamespace "mojmap"
+
+        /*stub.withMappings("intermediary", ["yarn"]) {
+            c("net/minecraft/class_1927", []) {
+                m("method_55109", "()Lnet/minecraft/class_243;", ["getPos"])
+            }
+        }*/
+    }
+
+    defaultRemapJar = false
+}
+
+unimined.minecraft(sourceSets.fabric) {
+    combineWith(sourceSets.main)
+
+    fabric {
+        loader project.fabric_version
+    }
+
+    defaultRemapJar = true
+}
+
+unimined.minecraft(sourceSets.neoforge) {
+    combineWith(sourceSets.main)
+
+    neoForged {
+        loader project.neoforge_version
+        mixinConfig 'mc_runtime_test.mixins.json'
+    }
+
+    minecraftRemapper.config {
+        // neoforge adds 1 conflict, where 2 interfaces have a method with the same name on yarn/mojmap,
+        // but the method has different names in the intermediary mappings.
+        // this is a conflict because they have a class that extends both interfaces.
+        // this shouldn't be a problem as long as named mappings don't make the name of those 2 methods different.
+        ignoreConflicts(true)
+    }
+
+    defaultRemapJar = true
+}
+
+unimined.minecraft(sourceSets.lexforge) {
+    combineWith(sourceSets.main)
+
+    minecraftForge {
+        loader project.lexforge_version
+        mixinConfig 'mc_runtime_test.mixins.json'
+    }
+
+    minecraftRemapper.config {
+        ignoreConflicts(true)
+    }
+
+    defaultRemapJar = true
+}
+
+configurations {
+    mainImplementation
+    lwjglAgent.extendsFrom runtimeOnly
+    jarLibs
+    implementation.extendsFrom jarLibs
+}
+
+for (String platform_capitalized : ['Fabric', 'Neoforge', 'Lexforge']) {
+    def platform = platform_capitalized.toLowerCase()
+    def remapJarTask = tasks.named("remap${platform_capitalized}Jar", AbstractArchiveTask).get()
+    def shadowTask = tasks.register("${platform}ShadowJar", ShadowJar) {
+        dependsOn(remapJarTask)
+        it.group = 'build'
+        it.archiveClassifier = "${platform}-release"
+        from remapJarTask.outputs
+        it.configurations += [ project.configurations.jarLibs ]
+        exclude "**/module-info.class"
+    }
+    tasks.named('build') { finalizedBy(shadowTask) }
+}
+
+dependencies {
+    compileOnly 'org.spongepowered:mixin:0.8.5-SNAPSHOT'
+    compileOnly 'me.earth.headlessmc:headlessmc:1.8.1'
+    lwjglAgent 'me.earth.headlessmc:headlessmc-lwjgl:1.8.1'
+    // yes, I actually want this at runtime to use assertions!
+    jarLibs 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    jarLibs project(':api')
+}
+
+afterEvaluate {
+    fabricRunClient {
+        standardInput = System.in
+        if (rootProject.property('hmc.lwjgl').toBoolean()) {
+            jvmArgs += ["-javaagent:${configurations.lwjglAgent.files.iterator().next()}"]
+            systemProperties['joml.nounsafe'] = 'true'
+            systemProperties['fabric.systemLibraries'] = "${configurations.lwjglAgent.files.iterator().next()}"
+        }
+    }
+}
+
+processFabricResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+processNeoforgeResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand "version": project.version
+    }
+}
+
+processLexforgeResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+
+// Forge Runs seem to have problems running from the build/classes folder
+// So instead we just run from the built jar
+afterEvaluate {
+    lexforgeRunClient {
+        dependsOn(lexforgeJar)
+        classpath = classpath.filter {
+            !it.toString().contains('mc-runtime-test/build/classes/java/'.replace('/', File.separator))
+                    && !it.toString().contains('mc-runtime-test/build/resources/'.replace('/', File.separator))
+        }
+
+        classpath += files("${projectDir}/build/libs/mc-runtime-test-${version}-lexforge-dev.jar".replace('/', File.separator))
+    }
+
+    neoforgeRunClient {
+        dependsOn(neoforgeJar)
+        classpath = classpath.filter {
+            !it.toString().contains('mc-runtime-test/build/classes/java/'.replace('/', File.separator))
+                    && !it.toString().contains('mc-runtime-test/build/resources/'.replace('/', File.separator))
+        }
+
+        classpath += files("${projectDir}/build/libs/mc-runtime-test-${version}-neoforge-dev.jar".replace('/', File.separator))
+    }
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    from("LICENSE") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+
+    manifest {
+        attributes(
+            'Implementation-Title': 'MC-Runtime-Test',
+            'MixinConfigs': "mc_runtime_test.mixins.json",
+            'Implementation-Version': project.version,
+        )
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            "${name.toLowerCase()}"(MavenPublication) {
+                ((MavenPublication) it).groupId "${group}"
+                ((MavenPublication) it).artifactId "${archivesBaseName.toLowerCase()}"
+                ((MavenPublication) it).version "${version}"
+                from components.java
+                for (String platform: ['Fabric', 'Lexforge', 'Neoforge']) {
+                    String platform_lower = platform.toLowerCase()
+                    artifact tasks.named("${platform_lower}Jar").get()
+                    artifact tasks.named("remap${platform}Jar").get()
+                    artifact tasks.named("${platform_lower}ShadowJar").get()
+                }
+            }
+        }
+
+        repositories {
+            if (System.getenv('DEPLOY_TO_GITHUB_PACKAGES_URL') == null) {
+                maven {
+                    name = 'BuildDirMaven'
+                    url = rootProject.projectDir.toPath().parent.resolve('build').resolve('maven')
+                }
+            } else {
+                maven {
+                    name = 'GithubPagesMaven'
+                    url = System.getenv('DEPLOY_TO_GITHUB_PACKAGES_URL')
+                    credentials {
+                        username = System.getenv('GITHUB_USER')
+                        password = System.getenv('GITHUB_TOKEN')
+                    }
+                }
+            }
+        }
+    }
+}

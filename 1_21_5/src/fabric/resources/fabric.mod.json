@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "mc_runtime_test",
+  "version": "${version}",
+
+  "name": "MC-Runtime-Test",
+  "description": "Run tests on the Minecraft client at runtime",
+  "authors": [
+    "3arthqu4ke"
+  ],
+  "contact": {
+    "homepage": "https://github.com/headlesshq/mc-runtime-test",
+    "sources": "https://github.com/headlesshq/mc-runtime-test"
+  },
+
+  "license": "MIT",
+
+  "environment": "*",
+  "mixins": [
+    "mc_runtime_test.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "minecraft": "~1.21.0",
+    "java": ">=8"
+  }
+}
