@@ -78,7 +78,7 @@ jobs:
       - name: [Example] Stage mod for test client
         run: |
           mkdir -p run/mods
-          cp build/libs/<your-mod>.jar run/mods
+          cp build/libs/&lt;your-mod&gt;.jar run/mods
 
       - name: Run MC test client
         uses: headlesshq/mc-runtime-test@3.1.0 <!-- x-release-please-version -->
