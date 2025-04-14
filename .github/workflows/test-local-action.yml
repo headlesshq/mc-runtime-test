@@ -50,7 +50,7 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
 
       - name: Setup temurin-${{ env.java_version }}
-        uses: useblacksmith/setup-java@ffdcc086410416d16bc6eebdf2412fa3b37823d9 # v5
+        uses: useblacksmith/setup-java@4ef812391eff6e9737ba13bf0356d0f702877a64 # v5
         with:
           java-version: ${{ env.java_version }}
           distribution: temurin
