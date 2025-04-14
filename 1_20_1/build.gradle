@@ -115,7 +115,7 @@ dependencies {
     compileOnly 'me.earth.headlessmc:headlessmc:1.8.1'
     lwjglAgent 'me.earth.headlessmc:headlessmc-lwjgl:1.8.1'
     // yes, I actually want this at runtime to use assertions!
-    jarLibs 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    jarLibs 'org.junit.jupiter:junit-jupiter-api:5.11.4'
     jarLibs project(':api')
 }
 
