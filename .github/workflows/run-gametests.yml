@@ -51,7 +51,7 @@ jobs: # TODO: add cleanup job
           cp merged-artifacts/mc-runtime-test-${{ matrix.mc }}-*-${{ matrix.type }}-release.jar run/mods
 
       - name: Setup temurin-${{ matrix.java }}
-        uses: useblacksmith/setup-java@ffdcc086410416d16bc6eebdf2412fa3b37823d9 # v5
+        uses: useblacksmith/setup-java@4ef812391eff6e9737ba13bf0356d0f702877a64 # v5
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
