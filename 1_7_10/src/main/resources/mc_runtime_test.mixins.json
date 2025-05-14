@@ -4,7 +4,8 @@
   "package": "me.earth.mc_runtime_test.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "MixinMinecraft"
+    "MixinMinecraft",
+    "MixinNetworkManager"
   ],
   "injectors": {
     "defaultRequire": 1
