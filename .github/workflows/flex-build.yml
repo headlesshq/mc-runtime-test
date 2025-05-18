@@ -59,7 +59,7 @@ jobs:
 
       - if: steps.cache.outputs.cache-hit != 'true'
         name: Setup Gradle
-        uses: useblacksmith/setup-gradle/setup-gradle@cae352faf4364352bc1f3d74728bb687aa57cf1d # v6
+        uses: useblacksmith/setup-gradle/setup-gradle@7f7b3552fe93f9f80c27f6fb113bb11b7c0fa8eb # v6
         with:
           workflow-job-context: '{}' # FIXME: avoid this cache duplication workaround
 
