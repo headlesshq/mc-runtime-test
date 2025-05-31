@@ -21,12 +21,12 @@ public class MixinNetworkManager {
 
     @Inject(method = "scheduleOutboundPacket", at = @At("HEAD"))
     protected void scheduleOutboundPacketHook(Packet packet, GenericFutureListener<?>[] futureListeners, CallbackInfo ci) {
-        logger.info("Sending packet: " + packet.getClass().getName());
+        logger.info("Sending packet: {}", packet.getClass().getName());
     }
 
     @Inject(method = "channelRead0", at = @At("HEAD"))
     protected void channelRead0Hook(ChannelHandlerContext context, Packet packet, CallbackInfo ci) {
-        logger.info("Packet received: " + packet.getClass().getName());
+        logger.info("Packet received: {}", packet.getClass().getName());
     }
 
     @Inject(method = "exceptionCaught", at = @At("HEAD"))
