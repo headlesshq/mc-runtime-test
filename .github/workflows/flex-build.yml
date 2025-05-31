@@ -52,7 +52,7 @@ jobs:
 
       - if: steps.cache.outputs.cache-hit != 'true'
         name: Setup Java
-        uses: useblacksmith/setup-java@ffdcc086410416d16bc6eebdf2412fa3b37823d9 # v5
+        uses: useblacksmith/setup-java@4ef812391eff6e9737ba13bf0356d0f702877a64 # v5
         with:
           distribution: temurin
           java-version: ${{ inputs.java }}
