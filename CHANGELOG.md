@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/headlesshq/mc-runtime-test/compare/3.1.1...3.1.2) (2025-05-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency net.fabricmc.fabric-api:fabric-gametest-api-v1 to v1.3.16+1172e8970d ([#76](https://github.com/headlesshq/mc-runtime-test/issues/76)) ([3dea483](https://github.com/headlesshq/mc-runtime-test/commit/3dea483a2f228cd917d269a0dfcec6b88434cc85))
+
 ## [3.1.1](https://github.com/headlesshq/mc-runtime-test/compare/3.1.0...3.1.1) (2025-05-01)
 
 
