@@ -69,4 +69,3 @@ jobs:
           fabric-api: ${{ github.event.inputs.fabric-api }}
           fabric-gametest-api: ${{ github.event.inputs.fabric-gametest-api }}
           hmc-version: ${{ github.event.inputs.hmc-version }}
-          cache-mc: false

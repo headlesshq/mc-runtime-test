@@ -60,6 +60,7 @@ jobs: # TODO: add cleanup job
         timeout-minutes: 3
         uses: ./
         with:
+          cache-mc: "true"
           mc: ${{ matrix.mc }}
           modloader: ${{ matrix.modloader }}
           regex: ${{ matrix.regex }}

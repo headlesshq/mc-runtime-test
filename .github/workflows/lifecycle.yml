@@ -256,6 +256,7 @@ jobs:
         timeout-minutes: 3
         uses: ./
         with:
+          cache-mc: "true"
           mc: ${{ matrix.version.mc }}
           mc-runtime-test: none
           modloader: ${{ matrix.version.modloader }}
