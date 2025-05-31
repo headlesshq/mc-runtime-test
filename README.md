@@ -118,7 +118,7 @@ The following table summarizes the available inputs for customization:
 ---
 
 ## Caching
-Mc-Runtime-Test optionally caches `.minecraft` to improve execution time, for this we use `blacksmith/cache` simply follow the instructions [here](https://docs.blacksmith.sh/introduction/quickstart) to enable blacksmith for your repositories and enable the `cache-mc` input.
+MC-Runtime-Test optionally caches `.minecraft` to improve execution time, for this we use `blacksmith/cache` simply follow the instructions [here](https://docs.blacksmith.sh/introduction/quickstart) to enable blacksmith for your repositories and enable the `cache-mc` input.
 
 ## Running Your Own Tests
 MC-Runtime-Test supports Minecraft’s [Game-Test Framework](https://www.minecraft.net/en-us/creator/article/get-started-gametest-framework). It executes `/test runall` upon joining a world.
