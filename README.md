@@ -99,26 +99,32 @@ More examples:
 ## Inputs
 The following table summarizes the available inputs for customization:
 
-| Input                 | Description                            | Required | Example                                  |
-|-----------------------|----------------------------------------|----------|------------------------------------------|
-| `mc`                  | Minecraft version to run               | Yes      | `1.20.4`                                 |
-| `modloader`           | Modloader to install                   | Yes      | `forge`, `neoforge`, `fabric`            |
-| `regex`               | Regex to match the modloader jar       | Yes      | `.*fabric.*`                             |
-| `java`                | Java version to use                    | Yes      | `8`, `16`, `17`, `21`                    |
-| `mc-runtime-test`     | MC-Runtime-Test jar to download        | Yes      | `none`, `lexforge`, `neoforge`, `fabric` |
-| `dummy-assets`        | Use dummy assets during testing        |          | `true`, `false`                          |
-| `xvfb`                | Runs the game with Xvfb                |          | `true`, `false`                          |
-| `headlessmc-command`  | Command-line arguments for HeadlessMC  |          | `--jvm "-Djava.awt.headless=true"`       |
-| `fabric-api`          | Fabric API version to download or none |          | `0.97.0`, `none`                         |
-| `fabric-gametest-api` | Fabric GameTest API version or none    |          | `1.3.5+85d85a934f`, `none`               |
-| `download-hmc`        | Download HeadlessMC                    |          | `true`, `false`                          |
-| `hmc-version`         | HeadlessMC version                     |          | `2.5.1`, `1.5.0`                         |
-| `cache-mc`            | Cache `.minecraft`                     |          | `true`, `false`                          |
+| Input                 | Description                                               | Required | Example                                  |
+|-----------------------|-----------------------------------------------------------|----------|------------------------------------------|
+| `mc`                  | Minecraft version to run                                  | Yes      | `1.20.4`                                 |
+| `modloader`           | Modloader to install                                      | Yes      | `forge`, `neoforge`, `fabric`            |
+| `regex`               | Regex to match the modloader jar                          | Yes      | `.*fabric.*`                             |
+| `java`                | Java version to use                                       | Yes      | `8`, `16`, `17`, `21`                    |
+| `mc-runtime-test`     | MC-Runtime-Test jar to download                           | Yes      | `none`, `lexforge`, `neoforge`, `fabric` |
+| `dummy-assets`        | Use dummy assets during testing                           |          | `true`, `false`                          |
+| `xvfb`                | Runs the game with Xvfb                                   |          | `true`, `false`                          |
+| `headlessmc-command`  | Command-line arguments for HeadlessMC                     |          | `--jvm "-Djava.awt.headless=true"`       |
+| `fabric-api`          | Fabric API version to download or none                    |          | `0.97.0`, `none`                         |
+| `fabric-gametest-api` | Fabric GameTest API version or none                       |          | `1.3.5+85d85a934f`, `none`               |
+| `download-hmc`        | Download HeadlessMC                                       |          | `true`, `false`                          |
+| `hmc-version`         | HeadlessMC version                                        |          | `2.5.1`, `1.5.0`                         |
+| `cache-mc`            | Cache `.minecraft` <br/>(`true` defaults to `blacksmith`) |          | `github`, `blacksmith`, `true`, `false`  |
 
 ---
 
 ## Caching
-MC-Runtime-Test optionally caches `.minecraft` to improve execution time, for this we use `blacksmith/cache` simply follow the instructions [here](https://docs.blacksmith.sh/introduction/quickstart) to enable blacksmith for your repositories and enable the `cache-mc` input.
+MC-Runtime-Test optionally caches `.minecraft` to improve execution time.
+By default `cache-mc` is set to `github`, which uses `actions/cache`.
+Set `cache-mc` to `false` to disable caching.
+
+Another option is `blacksmith` for `blacksmith/cache`. 
+Simply follow the instructions [here](https://docs.blacksmith.sh/introduction/quickstart)
+to enable blacksmith for your repositories and enable the `cache-mc` input.
 
 ## Running Your Own Tests
 MC-Runtime-Test supports Minecraft’s [Game-Test Framework](https://www.minecraft.net/en-us/creator/article/get-started-gametest-framework). It executes `/test runall` upon joining a world.
