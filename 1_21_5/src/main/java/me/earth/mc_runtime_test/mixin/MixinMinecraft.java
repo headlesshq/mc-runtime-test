@@ -49,7 +49,7 @@ public abstract class MixinMinecraft {
     @Shadow
     public abstract void setScreen(@Nullable Screen screen);
 
-    @Shadow
+    @Shadow(aliases = {"disconnect", "disconnectWithProgressScreen"})
     public abstract void disconnect();
 
     @Inject(method = "setScreen", at = @At("HEAD"))
