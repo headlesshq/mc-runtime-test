@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.0.0](https://github.com/headlesshq/mc-runtime-test/compare/3.1.1...4.0.0) (2025-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* Default to github cache, blacksmith or no cache are configurable, extensive 1.7.10 logging ([#74](https://github.com/headlesshq/mc-runtime-test/issues/74))
+
+### Features
+
+* Default to github cache, blacksmith or no cache are configurable, extensive 1.7.10 logging ([#74](https://github.com/headlesshq/mc-runtime-test/issues/74)) ([0031914](https://github.com/headlesshq/mc-runtime-test/commit/003191416d070c4f5e1b69305b2fa17b1ce33e46))
+
+
+### Bug Fixes
+
+* **deps:** update dependency net.fabricmc.fabric-api:fabric-gametest-api-v1 to v1.3.16+1172e8970d ([#76](https://github.com/headlesshq/mc-runtime-test/issues/76)) ([3dea483](https://github.com/headlesshq/mc-runtime-test/commit/3dea483a2f228cd917d269a0dfcec6b88434cc85))
+
 ## [3.1.1](https://github.com/headlesshq/mc-runtime-test/compare/3.1.0...3.1.1) (2025-05-01)
 
 
