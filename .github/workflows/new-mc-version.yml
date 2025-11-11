@@ -49,14 +49,5 @@ jobs:
           git add --all
           git commit -m "feat: ${LATEST_VERSION}"
           git push origin "$BRANCH_NAME"
+          gh pr create -B base_branch -H branch_to_merge --title 'feat: ${LATEST_VERSION}' --body 'This PR updates files for Minecraft version ${LATEST_VERSION}.'
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
-
-      - name: Create Pull Request
-        if: steps.git-check.outputs.changes == 'true' && env.LATEST_VERSION != ''
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.push-branch.outputs.branch }}
-          base: main
-          title: "feat: ${LATEST_VERSION}"
-          body: "This PR updates files for Minecraft version ${LATEST_VERSION}."
