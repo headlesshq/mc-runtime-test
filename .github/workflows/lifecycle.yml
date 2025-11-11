@@ -79,11 +79,19 @@ jobs:
         with:
           filters: |
             ${{ steps.paths.outputs.filter }}
+            
+      - name: Find PR comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/find-comment@v1
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "Automatic commit: build and run "
 
       - id: matrices # TODO: build origin matrices dynamically, consider collapsing this into a .py
         name: Construct matrices
         env:
-          PR_COMMENT_BODY: ${{ github.event.comment.body }}
+          PR_COMMENT_BODY: ${{ steps.find-comment.outputs.comment-body }}
         run: |
           import os
           import json
