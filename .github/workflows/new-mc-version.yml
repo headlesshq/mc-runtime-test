@@ -1,0 +1,60 @@
+name: Check for new mc version
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  check-for-new-mc-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      #- name: Install dependencies
+      #  run: |
+      #    if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run Python script
+        run: python check-for-new-mc-versions.py
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create new branch, commit and push
+        if: steps.git-check.outputs.changes == 'true'
+        id: push-branch
+        run: |
+          BRANCH_NAME="version-${LATEST_VERSION}"
+          git checkout -b "$BRANCH_NAME"
+          git add .
+          git commit -m "feat: ${LATEST_VERSION}"
+          git push origin "$BRANCH_NAME"
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.git-check.outputs.changes == 'true' && env.LATEST_VERSION != ''
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.push-branch.outputs.branch }}
+          base: main
+          title: "feat: ${LATEST_VERSION}"
+          body: "This PR updates files for Minecraft version ${LATEST_VERSION}."
