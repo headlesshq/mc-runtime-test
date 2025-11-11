@@ -1,10 +1,40 @@
-import requests
 import os
 import re
+import shutil
+from typing import Callable
+
+import requests
+
+
+def modify_file(file_path: str, func: Callable[[str], str]):
+    with open(file_path, "r") as f:
+        content = f.read()
+
+    func(content)
+
+    with open(file_path, "w") as f:
+        f.write(content)
+
+
+def modify_forge_mod(content: str, major: int, minor: int) -> str:
+    content = re.sub(r'versionRange = "\[.*,\)"', f'versionRange = "[{major}.{minor}.0,)"', content)
+    return content
+
+
+def modify_fabric_mod_json(content: str, major: int, minor: int) -> str:
+    content = re.sub(r'"minecraft": "~.*",', f'"minecraft": "~{major}.{minor}.0",', content)
+    return content
+
+
+def modify_gradle_properties(content: str, latest: str, lex: int) -> str:
+    content = re.sub(r'minecraft_version\s*=\s*.*', f'minecraft_version = {latest}', content)
+    content = re.sub(r'lexforge_version\s*=\s*.*', f'lexforge_version = {lex}.0.0', content)
+    return content
 
 
 def modify_lifecycle(curr_dir: str, latest: str, lex: int):
-    with open('.github/workflows/lifecycle.yml', "r", encoding="utf-8") as f:
+    lifecycle_yml = '.github/workflows/lifecycle.yml'
+    with open(lifecycle_yml, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     out = []
@@ -17,23 +47,33 @@ def modify_lifecycle(curr_dir: str, latest: str, lex: int):
             out.append(f"{{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
             out.append(f"{{\"mc\": \"{latest}\", \"type\": \"fabric\", \"modloader\": \"fabric\", \"regex\": \".*fabric.*\", \"java\": \"21\"}},\n")
 
-
-    with open('.github/workflows/lifecycle.yml', "w", encoding="utf-8") as f:
+    with open(lifecycle_yml, "w", encoding="utf-8") as f:
         f.writelines(out)
 
 
-def modify_script_file(major: int, minor: int, patch: int, lex: int):
-    script_path = __file__
-    with open(script_path, "r") as f:
-        content = f.read()
-
+def modify_script_file(content: str, curr_dir: str, major: int, minor: int, patch: int, lex: int) -> str:
     content = re.sub(r'current_major\s*=\s*\d+', f'current_major = {major}', content)
     content = re.sub(r'current_minor\s*=\s*\d+', f'current_minor = {minor}', content)
     content = re.sub(r'current_patch\s*=\s*\d+', f'current_patch = {patch}', content)
     content = re.sub(r'current_lex\s*=\s*\d+', f'current_lex = {lex}', content)
+    content = re.sub(r'curr_dir\s*=\s*[\'"][^\'"]*[\'"]', f'curr_dir = \'{curr_dir}\'', content)
+    return content
 
-    with open(script_path, "w") as f:
-        f.write(content)
+
+def prepare_new_dir(curr_dir: str, latest: str, major: int, minor: int, patch: int, lex: int) -> str:
+    new_dir = f"{major}_{minor}"
+    shutil.copytree(curr_dir, new_dir, dirs_exist_ok=True)
+
+    modify_file(os.path.join(new_dir, 'gradle.properties'),
+                lambda c: modify_gradle_properties(c, latest, lex))
+    modify_file(os.path.join(new_dir, 'src', 'fabric', 'resources', 'fabric.mod.json'),
+                lambda c: modify_fabric_mod_json(c, major, minor))
+    modify_file(os.path.join(new_dir, 'src', 'lexforge', 'resources', 'META-INF', 'mods.toml'),
+                lambda c: modify_forge_mod(c, major, minor))
+    modify_file(os.path.join(new_dir, 'src', 'neoforge', 'resources', 'META-INF', 'neoforge.mods.toml'),
+                lambda c: modify_forge_mod(c, major, minor))
+
+    return new_dir
 
 
 def check_latest_mc_version():
@@ -48,7 +88,7 @@ def check_latest_mc_version():
     response = requests.get(url)
     data = response.json()
 
-    latest_release = data['latest']['release'] # (1.21.5)
+    latest_release = data['latest']['release']  # (1.21.5)
     print("Latest Release", latest_release)
     major_minor_patch = latest_release.split('.')  # (1, 21, 5) or (1, 21)
     if len(major_minor_patch) < 2:
@@ -56,16 +96,20 @@ def check_latest_mc_version():
     elif len(major_minor_patch) > 3:
         raise Exception(major_minor_patch, "Length > 3")
 
-    latest_major = int(major_minor_patch[0])
-    latest_minor = int(major_minor_patch[1])
-    latest_patch = 0 if len(major_minor_patch) < 3 else int(major_minor_patch[2])
-    if current_major != latest_major or current_minor != latest_minor or current_patch != latest_patch:
+    major = int(major_minor_patch[0])
+    minor = int(major_minor_patch[1])
+    patch = 0 if len(major_minor_patch) < 3 else int(major_minor_patch[2])
+    if current_major != major or current_minor != minor or current_patch != patch:
+        current_lex += 1
         print("New Release found!")
         env_file = os.getenv('GITHUB_ENV')
         if env_file:
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
-            modify_script_file(latest_major, latest_minor, latest_patch, current_lex + 1)
+            if current_major != major or current_minor != minor:
+                curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, current_lex)
+
+            modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch, current_lex))
             modify_lifecycle(curr_dir, latest_release, current_lex + 1)
         else:
             raise FileNotFoundError("Failed to find GITHUB_ENV file!")
