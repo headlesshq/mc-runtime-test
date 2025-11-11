@@ -45,8 +45,8 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
-          assignees: [ okafke ]
-          reviewers: [ okafke ]
+          assignees: okafke
+          reviewers: okafke
           commit-message: "feat: ${{ env.LATEST_VERSION }}"
           delete-branch: true
           token: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
