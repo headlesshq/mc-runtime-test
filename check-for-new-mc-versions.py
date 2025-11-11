@@ -41,11 +41,11 @@ def modify_lifecycle(curr_dir: str, latest: str, lex: int):
     for i, line in enumerate(lines):
         out.append(line)
         if line.strip() == "# new-mc-version build data":
-            out.append(f"{{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}.0.0\", \"neo\": \"1-beta\", \"java\": \"21\"}},\n")
+            out.append(f"            {{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}.0.0\", \"neo\": \"1-beta\", \"java\": \"21\"}},\n")
         elif line.strip() == "# new-mc-version run data":
-            out.append(f"{{\"mc\": \"{latest}\", \"type\": \"lexforge\", \"modloader\": \"forge\", \"regex\": \".*forge.*\", \"java\": \"21\"}},\n")
-            out.append(f"{{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
-            out.append(f"{{\"mc\": \"{latest}\", \"type\": \"fabric\", \"modloader\": \"fabric\", \"regex\": \".*fabric.*\", \"java\": \"21\"}},\n")
+            out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"lexforge\", \"modloader\": \"forge\", \"regex\": \".*forge.*\", \"java\": \"21\"}},\n")
+            out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
+            out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"fabric\", \"modloader\": \"fabric\", \"regex\": \".*fabric.*\", \"java\": \"21\"}},\n")
 
     with open(lifecycle_yml, "w", encoding="utf-8") as f:
         f.writelines(out)
@@ -110,7 +110,7 @@ def check_latest_mc_version():
                 curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, current_lex)
 
             modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch, current_lex))
-            modify_lifecycle(curr_dir, latest_release, current_lex + 1)
+            modify_lifecycle(curr_dir, latest_release, current_lex)
         else:
             raise FileNotFoundError("Failed to find GITHUB_ENV file!")
 
