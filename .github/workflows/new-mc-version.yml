@@ -56,4 +56,4 @@ jobs:
         run: |
           gh pr create -B base_branch -H branch_to_merge --title 'feat: ${LATEST_VERSION}' --body 'This PR updates files for Minecraft version ${LATEST_VERSION}.'
         env:
-          token: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
+          GH_TOKEN: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
