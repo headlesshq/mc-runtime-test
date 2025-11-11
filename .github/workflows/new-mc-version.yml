@@ -46,7 +46,7 @@ jobs:
         run: |
           BRANCH_NAME="version-${LATEST_VERSION}"
           git checkout -b "$BRANCH_NAME"
-          git add .
+          git add --all
           git commit -m "feat: ${LATEST_VERSION}"
           git push origin "$BRANCH_NAME"
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
