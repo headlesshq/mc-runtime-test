@@ -40,20 +40,13 @@ jobs:
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create new branch, commit and push
-        if: steps.git-check.outputs.changes == 'true'
-        id: push-branch
-        run: |
-          BRANCH_NAME="version-${LATEST_VERSION}"
-          git checkout -b "$BRANCH_NAME"
-          git add --all
-          git commit -m "feat: ${LATEST_VERSION}"
-          git push origin "$BRANCH_NAME"
-          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
-
       - name: Create Pull Request
         if: steps.git-check.outputs.changes == 'true' && env.LATEST_VERSION != ''
-        run: |
-          gh pr create -B base_branch -H branch_to_merge --title 'feat: ${LATEST_VERSION}' --body 'This PR updates files for Minecraft version ${LATEST_VERSION}.'
-        env:
-          GH_TOKEN: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "feat: ${LATEST_VERSION}"
+          delete-branch: true
+          token: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
+          branch: ${{ steps.push-branch.outputs.branch }}
+          title: "feat: ${LATEST_VERSION}"
+          body: "This PR updates files for Minecraft version ${LATEST_VERSION}."
