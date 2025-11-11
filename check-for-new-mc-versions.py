@@ -10,7 +10,7 @@ def modify_file(file_path: str, func: Callable[[str], str]):
     with open(file_path, "r") as f:
         content = f.read()
 
-    func(content)
+    content = func(content)
 
     with open(file_path, "w") as f:
         f.write(content)
