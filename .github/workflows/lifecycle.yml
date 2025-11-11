@@ -186,6 +186,9 @@ jobs:
                   if match:
                     mc_versions = [ match.group(1) ]
                     dirs_to_filter = [ match.group(2) ]
+                    print('Matched PR body', mc_versions, dirs_to_filter)
+                  else:
+                    print('PR body did not match')
 
             case 'workflow_dispatch':
               input_dirs = '${{ github.event.inputs.dirs }}'
