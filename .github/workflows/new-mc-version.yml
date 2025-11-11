@@ -44,9 +44,10 @@ jobs:
         if: steps.git-check.outputs.changes == 'true' && env.LATEST_VERSION != ''
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: "feat: ${LATEST_VERSION}"
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          commit-message: "feat: ${{ env.LATEST_VERSION }}"
           delete-branch: true
           token: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
           branch: version-${{ env.LATEST_VERSION }}
-          title: "feat: ${LATEST_VERSION}"
-          body: "This PR updates files for Minecraft version ${LATEST_VERSION}."
+          title: "feat: ${{ env.LATEST_VERSION }}"
+          body: "This PR updates files for Minecraft version ${{ env.LATEST_VERSION }}."
