@@ -26,13 +26,13 @@ def modify_fabric_mod_json(content: str, major: int, minor: int) -> str:
     return content
 
 
-def modify_gradle_properties(content: str, latest: str, lex: int) -> str:
+def modify_gradle_properties(content: str, latest: str, lex: str) -> str:
     content = re.sub(r'minecraft_version\s*=\s*.*', f'minecraft_version = {latest}', content)
     content = re.sub(r'lexforge_version\s*=\s*.*', f'lexforge_version = {lex}.0.0', content)
     return content
 
 
-def modify_lifecycle(curr_dir: str, latest: str, lex: int):
+def modify_lifecycle(curr_dir: str, latest: str, lex: str):
     lifecycle_yml = '.github/workflows/lifecycle.yml'
     with open(lifecycle_yml, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -51,16 +51,15 @@ def modify_lifecycle(curr_dir: str, latest: str, lex: int):
         f.writelines(out)
 
 
-def modify_script_file(content: str, curr_dir: str, major: int, minor: int, patch: int, lex: int) -> str:
+def modify_script_file(content: str, curr_dir: str, major: int, minor: int, patch: int) -> str:
     content = re.sub(r'current_major\s*=\s*\d+', f'current_major = {major}', content)
     content = re.sub(r'current_minor\s*=\s*\d+', f'current_minor = {minor}', content)
     content = re.sub(r'current_patch\s*=\s*\d+', f'current_patch = {patch}', content)
-    content = re.sub(r'current_lex\s*=\s*\d+', f'current_lex = {lex}', content)
     content = re.sub(r'curr_dir\s*=\s*[\'"][^\'"]*[\'"]', f'curr_dir = \'{curr_dir}\'', content)
     return content
 
 
-def prepare_new_dir(curr_dir: str, latest: str, major: int, minor: int, patch: int, lex: int) -> str:
+def prepare_new_dir(curr_dir: str, latest: str, major: int, minor: int, patch: int, lex: str) -> str:
     new_dir = f"{major}_{minor}"
     shutil.copytree(curr_dir, new_dir, dirs_exist_ok=True)
 
@@ -76,13 +75,38 @@ def prepare_new_dir(curr_dir: str, latest: str, major: int, minor: int, patch: i
     return new_dir
 
 
+def get_lexforge_version(mc_version: str) -> str:
+    url = 'https://meta.prismlauncher.org/v1/net.minecraftforge/index.json'
+    response = requests.get(url)
+    data = response.json()
+    '''
+    "versions": [
+        {
+            "recommended": false,
+            "releaseTime": "2025-11-10T19:31:26+00:00",
+            "requires": [
+                {
+                    "equals": "1.21.10",
+                    "uid": "net.minecraft"
+                }
+            ],
+            "sha256": "1562b8e42aae92b8b8f502b392841f3107e407257d14e419842660d8d51db26e",
+            "version": "60.0.18"
+        },
+    '''
+    for version in data['versions']:
+        for require in version['requires']:
+            if require['equals'] == mc_version and require['uid'] == 'net.minecraft':
+                return version['version']
+
+    raise Exception(f"Failed to find Lexforge version for {mc_version}")
+
+
 def check_latest_mc_version():
     url = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
     current_major = 1
     current_minor = 21
     current_patch = 5
-
-    current_lex = 55
     curr_dir = '1_21_5'
 
     response = requests.get(url)
@@ -100,17 +124,17 @@ def check_latest_mc_version():
     minor = int(major_minor_patch[1])
     patch = 0 if len(major_minor_patch) < 3 else int(major_minor_patch[2])
     if current_major != major or current_minor != minor or current_patch != patch:
-        current_lex += 1
+        lex = get_lexforge_version(latest_release)
         print("New Release found!")
         env_file = os.getenv('GITHUB_ENV')
         if env_file:
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
             if current_major != major or current_minor != minor:
-                curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, current_lex)
+                curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, lex)
 
-            modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch, current_lex))
-            modify_lifecycle(curr_dir, latest_release, current_lex)
+            modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch))
+            modify_lifecycle(curr_dir, latest_release, lex)
         else:
             raise FileNotFoundError("Failed to find GITHUB_ENV file!")
 
