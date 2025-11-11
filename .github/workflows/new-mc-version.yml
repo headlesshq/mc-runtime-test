@@ -20,9 +20,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      #- name: Install dependencies
-      #  run: |
-      #    if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run Python script
         run: python check-for-new-mc-versions.py
