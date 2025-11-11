@@ -28,7 +28,7 @@ def modify_fabric_mod_json(content: str, major: int, minor: int) -> str:
 
 def modify_gradle_properties(content: str, latest: str, lex: str) -> str:
     content = re.sub(r'minecraft_version\s*=\s*.*', f'minecraft_version = {latest}', content)
-    content = re.sub(r'lexforge_version\s*=\s*.*', f'lexforge_version = {lex}.0.0', content)
+    content = re.sub(r'lexforge_version\s*=\s*.*', f'lexforge_version = {lex}', content)
     return content
 
 
@@ -41,7 +41,7 @@ def modify_lifecycle(curr_dir: str, latest: str, lex: str):
     for i, line in enumerate(lines):
         out.append(line)
         if line.strip() == "# new-mc-version build data":
-            out.append(f"            {{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}.0.0\", \"neo\": \"1-beta\", \"java\": \"21\"}},\n")
+            out.append(f"            {{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}\", \"neo\": \"1-beta\", \"java\": \"21\"}},\n")
         elif line.strip() == "# new-mc-version run data":
             out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"lexforge\", \"modloader\": \"forge\", \"regex\": \".*forge.*\", \"java\": \"21\"}},\n")
             out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
