@@ -43,6 +43,7 @@ jobs:
         if: steps.git-check.outputs.changes == 'true'
         id: push-branch
         run: |
+          gh auth login -s workflow
           BRANCH_NAME="version-${LATEST_VERSION}"
           git checkout -b "$BRANCH_NAME"
           git add .
