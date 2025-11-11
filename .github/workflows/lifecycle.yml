@@ -82,9 +82,12 @@ jobs:
 
       - id: matrices # TODO: build origin matrices dynamically, consider collapsing this into a .py
         name: Construct matrices
+        env:
+          PR_COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           import os
           import json
+          import re
 
           build_matrix = {"include": []}
           run_matrix = {"version": []}
@@ -168,12 +171,21 @@ jobs:
           ]
 
           dirs_to_filter = []
+          mc_versions = []
 
           match os.getenv('GITHUB_EVENT_NAME'):
             case 'pull_request':
               if "${{ steps.filter.outcome }}" == "success":
                 # Filter matrices based on the detected changes
                 dirs_to_filter = json.loads('${{ steps.filter.outputs.changes }}')
+                comment_body = os.getenv('PR_COMMENT_BODY')
+                print("PR-comment:", comment_body)
+                if comment_body:
+                  pattern = r'Automatic commit: build and run ([1-9\.]*[1-9]) in ([1-9_]*[1-9])'
+                  match = re.search(pattern, comment_body)
+                  if match:
+                    mc_versions = [ match.group(1) ]
+                    dirs_to_filter = [ match.group(2) ]
 
             case 'workflow_dispatch':
               input_dirs = '${{ github.event.inputs.dirs }}'
@@ -193,8 +205,8 @@ jobs:
                 build_matrix['include'], run_matrix['version'] = build_data, run_data
 
           if dirs_to_filter:
-            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter])
-            mc_versions = [item.get("mc") for item in build_matrix["include"] if "mc" in item]
+            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and (item["mc"] in mc_versions or not mc_versions)])
+            mc_versions = mc_versions if mc_versions else [item.get("mc") for item in build_matrix["include"] if "mc" in item]
             run_matrix['version'].extend([item for item in run_data if item["mc"] in mc_versions])
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
