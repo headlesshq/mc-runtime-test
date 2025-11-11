@@ -2,7 +2,27 @@ import requests
 import os
 import re
 
-def prepare_script_file(major: int, minor: int, patch: int, lex: int):
+
+def modify_lifecycle(curr_dir: str, latest: str, lex: int):
+    with open('.github/workflows/lifecycle.yml', "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    out = []
+    for i, line in enumerate(lines):
+        out.append(line)
+        if line.strip() == "# new-mc-version build data":
+            out.append(f"{{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}.0.0\", \"neo\": \"1-beta\", \"java\": \"21\"}},\n")
+        elif line.strip() == "# new-mc-version run data":
+            out.append(f"{{\"mc\": \"{latest}\", \"type\": \"lexforge\", \"modloader\": \"forge\", \"regex\": \".*forge.*\", \"java\": \"21\"}},\n")
+            out.append(f"{{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
+            out.append(f"{{\"mc\": \"{latest}\", \"type\": \"fabric\", \"modloader\": \"fabric\", \"regex\": \".*fabric.*\", \"java\": \"21\"}},\n")
+
+
+    with open('.github/workflows/lifecycle.yml', "w", encoding="utf-8") as f:
+        f.writelines(out)
+
+
+def modify_script_file(major: int, minor: int, patch: int, lex: int):
     script_path = __file__
     with open(script_path, "r") as f:
         content = f.read()
@@ -12,15 +32,8 @@ def prepare_script_file(major: int, minor: int, patch: int, lex: int):
     content = re.sub(r'current_patch\s*=\s*\d+', f'current_patch = {patch}', content)
     content = re.sub(r'current_lex\s*=\s*\d+', f'current_lex = {lex}', content)
 
-    with open(f"{script_path}.bak", "w") as f:
-        f.write(content)
-
     with open(script_path, "w") as f:
         f.write(content)
-
-
-def prepare_new_mc_version(curr_dir: str, major: int, minor: int, patch: int, lex: int):
-    prepare_script_file(major, minor, patch, lex)
 
 
 def check_latest_mc_version():
@@ -52,7 +65,8 @@ def check_latest_mc_version():
         if env_file:
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
-            prepare_new_mc_version(curr_dir, latest_major, latest_minor, latest_patch, current_lex + 1)
+            modify_script_file(latest_major, latest_minor, latest_patch, current_lex + 1)
+            modify_lifecycle(curr_dir, latest_release, current_lex + 1)
         else:
             raise FileNotFoundError("Failed to find GITHUB_ENV file!")
 
