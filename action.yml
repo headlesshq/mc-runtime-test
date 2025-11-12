@@ -109,14 +109,14 @@ runs:
     - if: inputs.fabric-api != 'none'
       name: Download fabric-api v${{ inputs.fabric-api }}
       run: >
-        wget -O run/mods/fabric-api-${{ inputs.fabric-api }}+${{ inputs.mc }}.jar
+        curl --create-dirs -o run/mods/fabric-api-${{ inputs.fabric-api }}+${{ inputs.mc }}.jar
         https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/${{ inputs.fabric-api }}+${{ inputs.mc }}/fabric-api-${{ inputs.fabric-api }}+${{ inputs.mc }}.jar
       shell: bash
 
     - if: inputs.fabric-gametest-api != 'none'
       name: Download fabric-gametest-api v${{ inputs.fabric-gametest-api }}
       run: >
-        wget -O run/mods/fabric-gametest-api-v1-${{ inputs.fabric-gametest-api }}.jar
+        curl --create-dirs -o run/mods/fabric-gametest-api-v1-${{ inputs.fabric-gametest-api }}.jar
         https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/${{ inputs.fabric-gametest-api }}/fabric-gametest-api-v1-${{ inputs.fabric-gametest-api }}.jar
       shell: bash
 
