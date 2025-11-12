@@ -10,13 +10,10 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      actions: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -24,11 +21,10 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        run: pip install -r new-versions/requirements.txt
 
       - name: Run Python script
-        run: python check-for-new-mc-versions.py
+        run: python new-versions/check-for-new-mc-versions.py
 
       - name: Check for changes
         id: git-check
@@ -51,7 +47,6 @@ jobs:
           #reviewers: okafke
           commit-message: "feat: ${{ env.LATEST_VERSION }}"
           delete-branch: true
-          token: ${{ secrets.MC_VERSION_WORKFLOW_TOKEN }}
           branch: version-${{ env.LATEST_VERSION }}
           title: "feat: ${{ env.LATEST_VERSION }}"
           body: "Automatic commit: build and run ${{ env.LATEST_VERSION }} in ${{ env.LATEST_VERSION_DIR }}"

@@ -1,7 +1,9 @@
+import json
 import os
 import re
 import shutil
 from typing import Callable
+from pathlib import Path
 
 import requests
 
@@ -58,31 +60,41 @@ def modify_gradle_properties(content: str, latest: str, lex: str) -> str:
     return content
 
 
-def modify_lifecycle(curr_dir: str, latest: str, lex: str):
-    lifecycle_yml = '.github/workflows/lifecycle.yml'
-    with open(lifecycle_yml, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+def update_ci_data(curr_dir: str, latest: str, lex: str):
+    with open('ci-data.json', "r") as f:
+        ci_data = json.load(f)
 
-    out = []
-    for i, line in enumerate(lines):
-        out.append(line)
-        if line.strip() == "# new-mc-version build data":
-            out.append(f"            {{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}\", \"neo\": \"0-beta\", \"java\": \"21\"}},\n")
-        elif line.strip() == "# new-mc-version run data":
-            out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"lexforge\", \"modloader\": \"forge\", \"regex\": \".*forge.*\", \"java\": \"21\"}},\n")
-            out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
-            out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"fabric\", \"modloader\": \"fabric\", \"regex\": \".*fabric.*\", \"java\": \"21\"}},\n")
+    build_data = ci_data['build_data']
+    run_data = ci_data['run_data']
 
-    with open(lifecycle_yml, "w", encoding="utf-8") as f:
-        f.writelines(out)
+    build_data.insert(1, {
+      "dir": curr_dir,
+      "mc": latest,
+      "lex": lex,
+      "neo": "0-beta",
+      "java": "21"
+    })
+
+    for ml_type, modloader in { "fabric": "fabric", "neoforge": "neoforge", "lexforge": "forge" }.items():
+        run_data.insert(0, {
+            "mc": latest,
+            "type": ml_type,
+            "modloader": modloader,
+            "regex": f".*{modloader}.*",
+            "java": "21"
+        })
+
+    with open('ci-data.json', "w") as f:
+        f.write(json.dumps(ci_data, indent='\t'))
 
 
-def modify_script_file(content: str, curr_dir: str, major: int, minor: int, patch: int) -> str:
-    content = re.sub(r'current_major\s*=\s*\d+', f'current_major = {major}', content)
-    content = re.sub(r'current_minor\s*=\s*\d+', f'current_minor = {minor}', content)
-    content = re.sub(r'current_patch\s*=\s*\d+', f'current_patch = {patch}', content)
-    content = re.sub(r'curr_dir\s*=\s*[\'"][^\'"]*[\'"]', f'curr_dir = \'{curr_dir}\'', content)
-    return content
+def update_current_version_json(file_path: Path, current_version: dict, curr_dir: str, major: int, minor: int, patch: int):
+    current_version['major'] = major
+    current_version['minor'] = minor
+    current_version['patch'] = patch
+    current_version['dir'] = curr_dir
+    with open(file_path, 'w') as f:
+        f.write(json.dumps(current_version, indent='\t'))
 
 
 def prepare_new_dir(curr_dir: str, latest: str, major: int, minor: int, patch: int, lex: str) -> str:
@@ -129,12 +141,16 @@ def get_lexforge_version(mc_version: str) -> str:
 
 
 def check_latest_mc_version():
-    url = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
-    current_major = 1
-    current_minor = 21
-    current_patch = 10
-    curr_dir = '1_21_10'
+    current_version_file_path = Path(__file__).parent / 'current-version.json'
+    with open(current_version_file_path) as f:
+        current_version = json.load(f)
 
+    current_major = current_version['major']
+    current_minor = current_version['minor']
+    current_patch = current_version['patch']
+    curr_dir = current_version['dir']
+
+    url = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
     response = requests.get(url)
     data = response.json()
 
@@ -156,8 +172,8 @@ def check_latest_mc_version():
         if env_file:
             if current_major != major or current_minor != minor:
                 curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, lex)
-            modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch))
-            modify_lifecycle(curr_dir, latest_release, lex)
+            update_current_version_json(current_version_file_path, current_version.copy(), curr_dir, major, minor, patch)
+            update_ci_data(curr_dir, latest_release, lex)
             modify_readme(current_major, current_minor, current_patch, major, minor, patch)
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
