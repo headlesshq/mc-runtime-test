@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/headlesshq/mc-runtime-test/compare/4.0.0...4.1.0) (2025-11-12)
+
+
+### Features
+
+* **mod:** Support 1.21.6 ([#81](https://github.com/headlesshq/mc-runtime-test/issues/81)) ([fef5a7f](https://github.com/headlesshq/mc-runtime-test/commit/fef5a7fdb0fd5eec30a8179e6eeb768373936276))
+
 ## [4.0.0](https://github.com/headlesshq/mc-runtime-test/compare/3.1.1...4.0.0) (2025-11-10)
 
 
