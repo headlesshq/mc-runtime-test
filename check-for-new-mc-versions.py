@@ -16,6 +16,32 @@ def modify_file(file_path: str, func: Callable[[str], str]):
         f.write(content)
 
 
+def modify_readme(last_major: int, last_minor: int, last_patch: int, major: int, minor: int, patch: int) -> str:
+    file_path = 'README.md'
+    with open(file_path, "r") as f:
+        lines = f.readlines()
+
+    out = []
+    prev_line = None
+    for i, line in enumerate(lines):
+        current_version = f"{major}.{minor}.{patch}"
+        if prev_line is not None and prev_line.startswith('|-----------------|----------------|----------------|----------------|'):
+            if last_major != major or last_minor != minor:
+                out.append(f"| {current_version} | ✔️              | ✔️              | ✔️              |\n")
+            else:
+                last_version = f"{last_major}.{last_minor}.{last_patch}"
+                if f"- {last_version}" in line:
+                    line = line.replace(last_version, current_version)
+                elif last_version in line:
+                    line = line.replace(last_version, f"{last_version} - {current_version}")
+        line = re.sub(r'mc:\s*.*', f'mc: {major}.{minor}.{patch}', line)
+        out.append(line)
+        prev_line = line
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.writelines(out)
+
+
 def modify_forge_mod(content: str, major: int, minor: int) -> str:
     content = re.sub(r'versionRange = "\[.*,\)"', f'versionRange = "[{major}.{minor}.0,)"', content)
     return content
@@ -41,7 +67,7 @@ def modify_lifecycle(curr_dir: str, latest: str, lex: str):
     for i, line in enumerate(lines):
         out.append(line)
         if line.strip() == "# new-mc-version build data":
-            out.append(f"            {{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}\", \"neo\": \"1-beta\", \"java\": \"21\"}},\n")
+            out.append(f"            {{\"dir\": \"{curr_dir}\", \"mc\": \"{latest}\", \"lex\": \"{lex}\", \"neo\": \"0-beta\", \"java\": \"21\"}},\n")
         elif line.strip() == "# new-mc-version run data":
             out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"lexforge\", \"modloader\": \"forge\", \"regex\": \".*forge.*\", \"java\": \"21\"}},\n")
             out.append(f"            {{\"mc\": \"{latest}\", \"type\": \"neoforge\", \"modloader\": \"neoforge\", \"regex\": \".*neoforge.*\", \"java\": \"21\"}},\n")
@@ -132,6 +158,7 @@ def check_latest_mc_version():
                 curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, lex)
             modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch))
             modify_lifecycle(curr_dir, latest_release, lex)
+            modify_readme(current_major, current_minor, current_patch, major, minor, patch)
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
                 f.write(f"LATEST_VERSION_DIR={curr_dir}\n")
