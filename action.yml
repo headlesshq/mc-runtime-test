@@ -49,7 +49,8 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Bootstrap HeadlessMC
+    - name: Bootstrap HeadlessMc (Linux)
+      if: runner.os != 'Windows'
       run: |
         mkdir -p HeadlessMC run/mods
         cat <<EOF >> HeadlessMC/config.properties
@@ -60,6 +61,22 @@ runs:
         hmc.exit.on.failed.command=true
         EOF
       shell: bash
+
+    - name: Bootstrap HeadlessMc (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        New-Item -ItemType Directory -Force -Path HeadlessMC, run/mods | Out-Null
+        $currentDir = (Get-Location).Path -replace '\\', '\\\\'
+        $javaPath = "$env:JAVA_HOME\bin\java.exe" -replace '\\', '\\\\'
+        $config = @(
+          "hmc.java.versions=$javaPath",
+          "hmc.gamedir=$currentDir\\run",
+          "hmc.offline=true",
+          "hmc.rethrow.launch.exceptions=true",
+          "hmc.exit.on.failed.command=true"
+        )
+        $config | Set-Content -Path HeadlessMC\config.properties -Encoding utf8
+      shell: pwsh
 
     - if: inputs.dummy-assets == 'true'
       name: Configure Dummy Assets
