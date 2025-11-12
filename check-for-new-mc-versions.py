@@ -128,13 +128,13 @@ def check_latest_mc_version():
         print("New Release found!")
         env_file = os.getenv('GITHUB_ENV')
         if env_file:
-            if current_major != major or current_minor != minor:
-                curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, lex)
-            modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch))
-            modify_lifecycle(curr_dir, latest_release, lex)
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
-                f.write(f"LATEST_VERSION_DIR={curr_dir}\n")
+            if current_major != major or current_minor != minor:
+                curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, lex)
+
+            modify_file(__file__, lambda c: modify_script_file(c, curr_dir, major, minor, patch))
+            modify_lifecycle(curr_dir, latest_release, lex)
         else:
             raise FileNotFoundError("Failed to find GITHUB_ENV file!")
 
