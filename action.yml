@@ -102,7 +102,7 @@ runs:
       uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
       with:
         repository: headlesshq/mc-runtime-test
-        tag: "4.0.0" # x-release-please-version
+        tag: "4.1.0" # x-release-please-version
         fileName: 'mc-runtime-test-${{ inputs.mc }}-*-${{ inputs.mc-runtime-test }}-release.jar'
         out-file-path: run/mods
 
