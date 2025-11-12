@@ -112,7 +112,7 @@ The following table summarizes the available inputs for customization:
 | `fabric-api`          | Fabric API version to download or none                    |          | `0.97.0`, `none`                         |
 | `fabric-gametest-api` | Fabric GameTest API version or none                       |          | `1.3.5+85d85a934f`, `none`               |
 | `download-hmc`        | Download HeadlessMC                                       |          | `true`, `false`                          |
-| `hmc-version`         | HeadlessMC version                                        |          | `2.5.1`, `1.5.0`                         |
+| `hmc-version`         | HeadlessMC version                                        |          | `2.7.0`, `1.5.0`                         |
 | `cache-mc`            | Cache `.minecraft` <br/>(`true` defaults to `blacksmith`) |          | `github`, `blacksmith`, `true`, `false`  |
 
 ---
