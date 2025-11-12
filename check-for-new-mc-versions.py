@@ -132,8 +132,8 @@ def check_latest_mc_version():
     url = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
     current_major = 1
     current_minor = 21
-    current_patch = 5
-    curr_dir = '1_21_5'
+    current_patch = 10
+    curr_dir = '1_21_10'
 
     response = requests.get(url)
     data = response.json()
