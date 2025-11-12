@@ -82,19 +82,15 @@ jobs:
 
       - id: matrices # TODO: build origin matrices dynamically, consider collapsing this into a .py
         name: Construct matrices
-        env:
-          PR_COMMENT_BODY: ${{ github.event.pull_request.body }}
         run: |
           import os
           import json
-          import re
 
           build_matrix = {"include": []}
           run_matrix = {"version": []}
 
           build_data = [
             {"dir": "api", "java": "8"},
-            # new-mc-version build data
             {"dir": "1_21_10", "mc": "1.21.10", "lex": "60.0.0", "neo": "50-beta", "java": "21"},
             {"dir": "1_21_6", "mc": "1.21.8", "lex": "58.0.0", "neo": "51", "java": "21"},
             {"dir": "1_21_6", "mc": "1.21.7", "lex": "57.0.0", "neo": "25-beta", "java": "21"},
@@ -123,7 +119,6 @@ jobs:
           ]
 
           run_data = [
-            # new-mc-version run data
             {"mc": "1.21.10", "type": "lexforge", "modloader": "forge", "regex": ".*forge.*", "java": "21"},
             {"mc": "1.21.10", "type": "neoforge", "modloader": "neoforge", "regex": ".*neoforge.*", "java": "21"},
             {"mc": "1.21.10", "type": "fabric", "modloader": "fabric", "regex": ".*fabric.*", "java": "21"},
@@ -187,24 +182,12 @@ jobs:
           ]
 
           dirs_to_filter = []
-          mc_versions = []
 
           match os.getenv('GITHUB_EVENT_NAME'):
             case 'pull_request':
               if "${{ steps.filter.outcome }}" == "success":
                 # Filter matrices based on the detected changes
                 dirs_to_filter = json.loads('${{ steps.filter.outputs.changes }}')
-                comment_body = os.getenv('PR_COMMENT_BODY')
-                print("PR-comment:", comment_body)
-                if comment_body:
-                  pattern = r'Automatic commit: build and run ([0-9\.]*[0-9]*) in ([0-9_]*[0-9]*)'
-                  match = re.search(pattern, comment_body)
-                  if match:
-                    mc_versions = [ match.group(1) ]
-                    dirs_to_filter = [ match.group(2) ]
-                    print('Matched PR body', mc_versions, dirs_to_filter)
-                  else:
-                    print('PR body did not match')
 
             case 'workflow_dispatch':
               input_dirs = '${{ github.event.inputs.dirs }}'
@@ -224,8 +207,8 @@ jobs:
                 build_matrix['include'], run_matrix['version'] = build_data, run_data
 
           if dirs_to_filter:
-            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and (item["mc"] in mc_versions or not mc_versions)])
-            mc_versions = mc_versions if mc_versions else [item.get("mc") for item in build_matrix["include"] if "mc" in item]
+            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter])
+            mc_versions = [item.get("mc") for item in build_matrix["include"] if "mc" in item]
             run_matrix['version'].extend([item for item in run_data if item["mc"] in mc_versions])
 
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
