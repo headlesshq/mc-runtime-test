@@ -197,7 +197,7 @@ jobs:
                 comment_body = os.getenv('PR_COMMENT_BODY')
                 print("PR-comment:", comment_body)
                 if comment_body:
-                  pattern = r'Automatic commit: build and run ([1-9\.]*[1-9]*) in ([1-9_]*[1-9]*)'
+                  pattern = r'Automatic commit: build and run ([1-9\.]*[1-9]) in ([1-9_]*[1-9])'
                   match = re.search(pattern, comment_body)
                   if match:
                     mc_versions = [ match.group(1) ]
