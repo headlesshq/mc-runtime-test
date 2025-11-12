@@ -18,7 +18,7 @@ def modify_file(file_path: str, func: Callable[[str], str]):
         f.write(content)
 
 
-def modify_readme(last_major: int, last_minor: int, last_patch: int, major: int, minor: int, patch: int) -> str:
+def modify_readme(last_version: str, new_version: str, last_major: int, major: int, last_minor: int, minor: int):
     file_path = 'README.md'
     with open(file_path, "r") as f:
         lines = f.readlines()
@@ -26,17 +26,15 @@ def modify_readme(last_major: int, last_minor: int, last_patch: int, major: int,
     out = []
     prev_line = None
     for i, line in enumerate(lines):
-        current_version = f"{major}.{minor}.{patch}"
         if prev_line is not None and prev_line.startswith('|-----------------|----------------|----------------|----------------|'):
             if last_major != major or last_minor != minor:
-                out.append(f"| {current_version} | ✔️              | ✔️              | ✔️              |\n")
+                out.append(f"| {new_version} | ✔️              | ✔️              | ✔️              |\n")
             else:
-                last_version = f"{last_major}.{last_minor}.{last_patch}"
                 if f"- {last_version}" in line:
-                    line = line.replace(last_version, current_version)
+                    line = line.replace(last_version, new_version)
                 elif last_version in line:
-                    line = line.replace(last_version, f"{last_version} - {current_version}")
-        line = re.sub(r'mc:\s*.*', f'mc: {major}.{minor}.{patch}', line)
+                    line = line.replace(last_version, f"{last_version} - {new_version}")
+        line = re.sub(r'mc:\s*.*', f'mc: {new_version}', line)
         out.append(line)
         prev_line = line
 
@@ -150,6 +148,9 @@ def check_latest_mc_version():
     current_patch = current_version['patch']
     curr_dir = current_version['dir']
 
+    current_version_name = f"{current_major}.{current_minor}" if current_patch == 0 \
+        else f"{current_major}.{current_minor}.{current_patch}"
+
     url = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
     response = requests.get(url)
     data = response.json()
@@ -174,7 +175,7 @@ def check_latest_mc_version():
                 curr_dir = prepare_new_dir(curr_dir, latest_release, major, minor, patch, lex)
             update_current_version_json(current_version_file_path, current_version.copy(), curr_dir, major, minor, patch)
             update_ci_data(curr_dir, latest_release, lex)
-            modify_readme(current_major, current_minor, current_patch, major, minor, patch)
+            modify_readme(current_version_name, latest_release, current_major, major, current_minor, minor)
             with open(env_file, 'a') as f:
                 f.write(f"LATEST_VERSION={latest_release}\n")
                 f.write(f"LATEST_VERSION_DIR={curr_dir}\n")
