@@ -41,7 +41,7 @@ inputs:
     default: "true"
   hmc-version:
     description: HeadlessMC version
-    default: "2.7.0"
+    default: "2.7.1"
   cache-mc:
     description: Cache .minecraft (blacksmith, github, true (defaults to blacksmith), false)
     default: "github"
