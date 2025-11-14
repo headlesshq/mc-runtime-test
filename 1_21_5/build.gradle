@@ -131,7 +131,7 @@ for (String platform_capitalized : ['Fabric', 'Neoforge', 'Lexforge']) {
 }
 
 dependencies {
-    compileOnly 'org.spongepowered:mixin:0.8.5-SNAPSHOT'
+    compileOnly 'org.spongepowered:mixin:0.8.7'
     compileOnly 'me.earth.headlessmc:headlessmc:1.8.1'
     lwjglAgent 'me.earth.headlessmc:headlessmc-lwjgl:1.8.1'
     // yes, I actually want this at runtime to use assertions!
