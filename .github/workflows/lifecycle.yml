@@ -137,7 +137,7 @@ jobs:
                 build_matrix['include'], run_matrix['version'] = build_data, run_data
 
           if dirs_to_filter:
-            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and (item["mc"] in mc_versions or not mc_versions)])
+            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and ("mc" not in item or (item["mc"] in mc_versions or not mc_versions))])
             mc_versions = mc_versions if mc_versions else [item.get("mc") for item in build_matrix["include"] if "mc" in item]
             run_matrix['version'].extend([item for item in run_data if item["mc"] in mc_versions])
 
