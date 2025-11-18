@@ -33,7 +33,7 @@ name: Test local action
         default: "1.3.5+85d85a934f"
       hmc-version:
         description: HeadlessMC version
-        default: "2.7.0"
+        default: "2.7.1"
 
 env:
   java_version: ${{ github.event.inputs.java }}
