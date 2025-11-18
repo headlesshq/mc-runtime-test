@@ -184,7 +184,7 @@ jobs:
       java: ${{ matrix.java }}
 
   run:
-    if: github.event_name != 'push'
+    if: github.event_name != 'push' && fromJSON(needs.matrices.outputs.run-matrix).version[0] != null
     name: Run tests
     needs:
       - matrices
