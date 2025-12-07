@@ -55,7 +55,7 @@ jobs:
       run-matrix: ${{ steps.matrices.outputs.run-matrix }}
     steps:
       - name: Checkout 
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 1
           ref: ${{ inputs.ref || github.ref }}
@@ -177,7 +177,7 @@ jobs:
         xvfb: [true, false]
     steps:
       - name: Checkout # TODO: simplify away this step, currently needed for `uses: ./`
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 1
 
