@@ -88,6 +88,7 @@ jobs:
           import os
           import json
           import re
+          import copy
 
           build_matrix = {"include": []}
           run_matrix = {"version": []}
@@ -136,10 +137,29 @@ jobs:
                 build_matrix['include'], run_matrix['version'] = build_data, run_data
 
           if dirs_to_filter:
-            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and (item["mc"] in mc_versions or not mc_versions)])
+            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and ("mc" not in item or (item["mc"] in mc_versions or not mc_versions))])
             mc_versions = mc_versions if mc_versions else [item.get("mc") for item in build_matrix["include"] if "mc" in item]
             run_matrix['version'].extend([item for item in run_data if item["mc"] in mc_versions])
 
+          for entry in run_matrix['version']:
+            entry['runner'] = 'blacksmith-2vcpu-ubuntu-2204'
+            entry['cache'] = 'blacksmith'
+            entry['xvfb'] = True
+  
+          additional_runs = []
+          for item in run_matrix['version']:
+            runners = [ ('blacksmith-2vcpu-ubuntu-2204', 'blacksmith') ] # also add non-xvfb runs for ubuntu
+            if len(additional_runs) < 9: # add other runners only for the latest version * 3 modloaders * 3 runners
+              runners += [ ('windows-latest', 'github'), ('macos-latest', 'github') ]
+            for runner, cache in runners:
+              entry = copy.deepcopy(item)
+              entry['runner'] = runner
+              entry['cache'] = cache
+              entry['xvfb'] = False
+              additional_runs.append(entry)
+            
+          run_matrix['version'] += additional_runs
+          
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(json.dumps(build_matrix, indent=2))
             fh.write(f'build-matrix={json.dumps(build_matrix)}\n')
@@ -164,17 +184,16 @@ jobs:
       java: ${{ matrix.java }}
 
   run:
-    if: github.event_name != 'push'
+    if: github.event_name != 'push' && fromJSON(needs.matrices.outputs.run-matrix).version[0] != null
     name: Run tests
     needs:
       - matrices
       - build
-    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       fail-fast: false
       matrix:
         ${{ insert }}: ${{ fromJSON(needs.matrices.outputs.run-matrix) }}
-        xvfb: [true, false]
+    runs-on: ${{ matrix.version.runner }}
     steps:
       - name: Checkout # TODO: simplify away this step, currently needed for `uses: ./`
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
@@ -191,7 +210,15 @@ jobs:
           mkdir -p run/mods
           cp mc-runtime-test-*-${{ matrix.version.type }}-release.jar run/mods
 
-      - name: Setup Java temurin-${{ matrix.version.java }}
+      - name: Setup Github Java temurin-${{ matrix.version.java }}
+        if: matrix.version.cache == 'github'
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.version.java }}
+          distribution: temurin
+
+      - name: Setup Blacksmith Java temurin-${{ matrix.version.java }}
+        if: matrix.version.cache == 'blacksmith'
         uses: useblacksmith/setup-java@4ef812391eff6e9737ba13bf0356d0f702877a64 # v5
         with:
           java-version: ${{ matrix.version.java }}
@@ -201,14 +228,14 @@ jobs:
         timeout-minutes: 3
         uses: ./
         with:
-          cache-mc: "blacksmith"
+          cache-mc: ${{ matrix.version.cache }}
           mc: ${{ matrix.version.mc }}
           mc-runtime-test: none
           modloader: ${{ matrix.version.modloader }}
           regex: ${{ matrix.version.regex }}
           java: ${{ matrix.version.java }}
-          xvfb: ${{ matrix.xvfb }}
-          headlessmc-command: ${{ !matrix.xvfb && '-lwjgl' || '' }} --retries 3 --jvm -Djava.awt.headless=true
+          xvfb: ${{ matrix.version.xvfb }}
+          headlessmc-command: ${{ !matrix.version.xvfb && '-lwjgl' || '' }} --retries 3 --jvm -Djava.awt.headless=true
 
   release:
     if: needs.release-please.outputs.release_created == 'true'
