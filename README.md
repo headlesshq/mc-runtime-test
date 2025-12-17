@@ -34,7 +34,7 @@ This project helps streamline that process by automating the client launch and b
 ### Supported Minecraft Versions and Modloaders
 | Version         | Forge           | Fabric          | NeoForge        |
 |-----------------|----------------|----------------|----------------|
-| 1.21 - 1.21.10  | ✔️              | ✔️              | ✔️              |
+| 1.21 - 1.21.11  | ✔️              | ✔️              | ✔️              |
 | 1.20.2 - 1.20.6 | ✔️              | ✔️              | ✔️              |
 | 1.20.1          | ✔️              | ✔️              | ⚠️              |
 | 1.19 - 1.19.4   | ✔️              | ✔️              | —              |
@@ -83,7 +83,7 @@ jobs:
       - name: Run MC test client
         uses: headlesshq/mc-runtime-test@4.1.0 <!-- x-release-please-version -->
         with:
-          mc: 1.21.5
+          mc: 1.21.11
           modloader: fabric
           regex: .*fabric.*
           mc-runtime-test: fabric
