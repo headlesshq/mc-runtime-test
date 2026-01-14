@@ -91,8 +91,8 @@ runs:
     - name: Download ${{ inputs.modloader }}-${{ inputs.mc }}
       run: |
         if [ ! -f "$HOME/.minecraft/versions/${{ inputs.mc }}/${{ inputs.mc }}.json" ]; then
-          java -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command download ${{ inputs.mc }}
-          java -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command ${{ inputs.modloader }} ${{ inputs.mc }} --java ${{ inputs.java }}
+          java -Dsun.net.client.defaultConnectTimeout=30000 -Dsun.net.client.defaultReadTimeout=30000 -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command download ${{ inputs.mc }}
+          java -Dsun.net.client.defaultConnectTimeout=30000 -Dsun.net.client.defaultReadTimeout=30000 -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command ${{ inputs.modloader }} ${{ inputs.mc }} --java ${{ inputs.java }}
         fi
       shell: bash
 
@@ -132,10 +132,10 @@ runs:
       name: Run game with xvfb
       run: | # TODO: install xrandr conditionally per #22
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
-        xvfb-run java -Dhmc.check.xvfb=true -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command launch ${{ inputs.regex }} -regex ${{ inputs.headlessmc-command }}
+        xvfb-run java -Dsun.net.client.defaultConnectTimeout=30000 -Dsun.net.client.defaultReadTimeout=30000 -Dhmc.check.xvfb=true -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command launch ${{ inputs.regex }} -regex ${{ inputs.headlessmc-command }}
       shell: bash
 
     - if: inputs.xvfb != 'true'
       name: Run game
-      run: java -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command launch ${{ inputs.regex }} -regex ${{ inputs.headlessmc-command }}
+      run: java -Dsun.net.client.defaultConnectTimeout=30000 -Dsun.net.client.defaultReadTimeout=30000 -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command launch ${{ inputs.regex }} -regex ${{ inputs.headlessmc-command }}
       shell: bash
