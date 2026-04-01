@@ -50,16 +50,6 @@ unimined.minecraft {
 
     mappings {
         mojmap()
-        // intermediary()
-        // yarn(1)
-
-        devFallbackNamespace "mojmap"
-
-        /*stub.withMappings("intermediary", ["yarn"]) {
-            c("net/minecraft/class_1927", []) {
-                m("method_55109", "()Lnet/minecraft/class_243;", ["getPos"])
-            }
-        }*/
     }
 
     defaultRemapJar = false
@@ -78,7 +68,7 @@ unimined.minecraft(sourceSets.fabric) {
 unimined.minecraft(sourceSets.neoforge) {
     combineWith(sourceSets.main)
 
-    neoForged {
+    neoForge {
         loader project.neoforge_version
         mixinConfig 'mc_runtime_test.mixins.json'
     }
@@ -206,9 +196,9 @@ tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
 
     manifest {
         attributes(
-            'Implementation-Title': 'MC-Runtime-Test',
-            'MixinConfigs': "mc_runtime_test.mixins.json",
-            'Implementation-Version': project.version,
+                'Implementation-Title': 'MC-Runtime-Test',
+                'MixinConfigs': "mc_runtime_test.mixins.json",
+                'Implementation-Version': project.version,
         )
     }
 }
