@@ -34,7 +34,7 @@ This project helps streamline that process by automating the client launch and b
 ### Supported Minecraft Versions and Modloaders
 | Version         | Forge           | Fabric          | NeoForge        |
 |-----------------|----------------|----------------|----------------|
-| 1.21 - 1.21.10  | ✔️              | ✔️              | ✔️              |
+| 1.21 - 1.21.11  | ✔️              | ✔️              | ✔️              |
 | 1.20.2 - 1.20.6 | ✔️              | ✔️              | ✔️              |
 | 1.20.1          | ✔️              | ✔️              | ⚠️              |
 | 1.19 - 1.19.4   | ✔️              | ✔️              | —              |
@@ -83,7 +83,7 @@ jobs:
       - name: Run MC test client
         uses: headlesshq/mc-runtime-test@4.1.0 <!-- x-release-please-version -->
         with:
-          mc: 1.21.5
+          mc: 1.21.11
           modloader: fabric
           regex: .*fabric.*
           mc-runtime-test: fabric
@@ -112,7 +112,7 @@ The following table summarizes the available inputs for customization:
 | `fabric-api`          | Fabric API version to download or none                    |          | `0.97.0`, `none`                         |
 | `fabric-gametest-api` | Fabric GameTest API version or none                       |          | `1.3.5+85d85a934f`, `none`               |
 | `download-hmc`        | Download HeadlessMC                                       |          | `true`, `false`                          |
-| `hmc-version`         | HeadlessMC version                                        |          | `2.7.0`, `1.5.0`                         |
+| `hmc-version`         | HeadlessMC version                                        |          | `2.9.0`, `1.5.0`                         |
 | `cache-mc`            | Cache `.minecraft` <br/>(`true` defaults to `blacksmith`) |          | `github`, `blacksmith`, `true`, `false`  |
 
 ---
