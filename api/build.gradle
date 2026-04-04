@@ -6,8 +6,12 @@ plugins {
 group 'me.earth'
 version "$project_version"
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+try { // gradle 9
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+} catch (ignored) {
+
+}
 
 compileJava {
     if (JavaVersion.current().isJava9Compatible()) {
@@ -20,7 +24,7 @@ afterEvaluate {
         publications {
             "${name.toLowerCase()}"(MavenPublication) {
                 ((MavenPublication) it).groupId "${group}"
-                ((MavenPublication) it).artifactId "${archivesBaseName.toLowerCase()}"
+                ((MavenPublication) it).artifactId "mc-runtime-test-api"
                 ((MavenPublication) it).version "${version}"
                 from components.java
             }
