@@ -84,7 +84,7 @@ jobs:
       - name: Run MC test client
         uses: headlesshq/mc-runtime-test@4.2.0 <!-- x-release-please-version -->
         with:
-          mc: 26.1
+          mc: 26.1.1
           modloader: fabric
           regex: .*fabric.*
           mc-runtime-test: fabric
