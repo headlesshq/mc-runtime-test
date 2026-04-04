@@ -1,6 +1,7 @@
 {
 	"build_data": [
 		{
+			"mc": "api",
 			"dir": "api",
 			"java": "8"
 		},
