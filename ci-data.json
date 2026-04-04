@@ -6,10 +6,17 @@
 		},
 		{
 			"dir": "26_1",
+			"mc": "26.1.1",
+			"lex": "63.0.1",
+			"neo": "0-beta",
+			"java": "25"
+		},
+		{
+			"dir": "26_1",
 			"mc": "26.1",
 			"lex": "62.0.9",
 			"neo": "0-beta",
-			"java": "21"
+			"java": "25"
 		},
 		{
 			"dir": "1_21_10",
@@ -177,25 +184,46 @@
 	],
 	"run_data": [
 		{
+			"mc": "26.1.1",
+			"type": "lexforge",
+			"modloader": "forge",
+			"regex": ".*forge.*",
+			"java": "25"
+		},
+		{
+			"mc": "26.1.1",
+			"type": "neoforge",
+			"modloader": "neoforge",
+			"regex": ".*neoforge.*",
+			"java": "25"
+		},
+		{
+			"mc": "26.1.1",
+			"type": "fabric",
+			"modloader": "fabric",
+			"regex": ".*fabric.*",
+			"java": "25"
+		},
+		{
 			"mc": "26.1",
 			"type": "lexforge",
 			"modloader": "forge",
 			"regex": ".*forge.*",
-			"java": "21"
+			"java": "25"
 		},
 		{
 			"mc": "26.1",
 			"type": "neoforge",
 			"modloader": "neoforge",
 			"regex": ".*neoforge.*",
-			"java": "21"
+			"java": "25"
 		},
 		{
 			"mc": "26.1",
 			"type": "fabric",
 			"modloader": "fabric",
 			"regex": ".*fabric.*",
-			"java": "21"
+			"java": "25"
 		},
 		{
 			"mc": "1.21.10",
