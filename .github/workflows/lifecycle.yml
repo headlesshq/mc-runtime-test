@@ -206,7 +206,7 @@ jobs:
 
       - name: Setup Blacksmith Java temurin-${{ matrix.version.java }}
         if: matrix.version.cache == 'blacksmith'
-        uses: useblacksmith/setup-java@4ef812391eff6e9737ba13bf0356d0f702877a6
+        uses: useblacksmith/setup-java@4ef812391eff6e9737ba13bf0356d0f702877a64 # v5
         with:
           java-version: ${{ matrix.version.java }}
           distribution: temurin
