@@ -61,7 +61,7 @@ on:
   workflow_dispatch:
 
 env:
-  java_version: 21
+  java_version: 25
 
 jobs:
   run:
