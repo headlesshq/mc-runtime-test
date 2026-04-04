@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.0](https://github.com/headlesshq/mc-runtime-test/compare/4.2.0...4.3.0) (2026-04-04)
+
+
+### Features
+
+* **action:** Windows support ([#128](https://github.com/headlesshq/mc-runtime-test/issues/128)) ([9b94ad5](https://github.com/headlesshq/mc-runtime-test/commit/9b94ad5c82c0485c836c99ec6fbe0bea64ea3325))
+
 ## [4.2.0](https://github.com/headlesshq/mc-runtime-test/compare/4.1.0...4.2.0) (2026-04-04)
 
 
