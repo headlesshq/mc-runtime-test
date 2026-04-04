@@ -34,8 +34,8 @@ This project helps streamline that process by automating the client launch and b
 ### Supported Minecraft Versions and Modloaders
 | Version         | Forge           | Fabric          | NeoForge        |
 |-----------------|----------------|----------------|----------------|
-| 26.1 | ✔️              | ✔️              | ✔️              |
-| 1.21 - 1.21.10  | ✔️              | ✔️              | ✔️              |
+| 26.1 - 26.1.1   | ✔️              | ✔️              | ✔️              |
+| 1.21 - 1.21.11  | ✔️              | ✔️              | ✔️              |
 | 1.20.2 - 1.20.6 | ✔️              | ✔️              | ✔️              |
 | 1.20.1          | ✔️              | ✔️              | ⚠️              |
 | 1.19 - 1.19.4   | ✔️              | ✔️              | —              |

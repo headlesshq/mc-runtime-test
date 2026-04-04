@@ -4,7 +4,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'java'
     id 'maven-publish'
-    id 'xyz.wagyourtail.unimined' version '1.3.14'
+    id 'xyz.wagyourtail.unimined' version '1.4.2-SNAPSHOT'
 }
 
 group 'me.earth'
@@ -50,16 +50,6 @@ unimined.minecraft {
 
     mappings {
         mojmap()
-        // intermediary()
-        // yarn(1)
-
-        devFallbackNamespace "mojmap"
-
-        /*stub.withMappings("intermediary", ["yarn"]) {
-            c("net/minecraft/class_1927", []) {
-                m("method_55109", "()Lnet/minecraft/class_243;", ["getPos"])
-            }
-        }*/
     }
 
     defaultRemapJar = false
@@ -78,7 +68,7 @@ unimined.minecraft(sourceSets.fabric) {
 unimined.minecraft(sourceSets.neoforge) {
     combineWith(sourceSets.main)
 
-    neoForged {
+    neoForge {
         loader project.neoforge_version
         mixinConfig 'mc_runtime_test.mixins.json'
     }
