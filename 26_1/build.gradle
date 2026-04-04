@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.gradleup.shadow' version '9.4.1'
     id 'java'
     id 'maven-publish'
-    id 'xyz.wagyourtail.unimined' version '1.3.14'
+    id 'xyz.wagyourtail.unimined' version '1.4.2-SNAPSHOT'
 }
 
 group 'me.earth'
@@ -123,8 +123,8 @@ for (String platform_capitalized : ['Fabric', 'Neoforge', 'Lexforge']) {
         dependsOn(remapJarTask)
         it.group = 'build'
         it.archiveClassifier = "${platform}-release"
-        from remapJarTask.outputs
-        it.configurations += [ project.configurations.jarLibs ]
+        from { zipTree(remapJarTask.archiveFile.get().asFile) }
+        it.configurations.add(project.configurations.jarLibs)
         exclude "**/module-info.class"
     }
     tasks.named('build') { finalizedBy(shadowTask) }
@@ -218,7 +218,7 @@ afterEvaluate {
         publications {
             "${name.toLowerCase()}"(MavenPublication) {
                 ((MavenPublication) it).groupId "${group}"
-                ((MavenPublication) it).artifactId "${archivesBaseName.toLowerCase()}"
+                ((MavenPublication) it).artifactId "${base.archivesName.get().toLowerCase()}"
                 ((MavenPublication) it).version "${version}"
                 from components.java
                 for (String platform: ['Fabric', 'Lexforge', 'Neoforge']) {
