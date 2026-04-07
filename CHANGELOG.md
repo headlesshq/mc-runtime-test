@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.1](https://github.com/headlesshq/mc-runtime-test/compare/4.3.0...4.3.1) (2026-04-07)
+
+
+### Bug Fixes
+
+* **versions:** Fixed build cache omitting Jars for some versions ([#131](https://github.com/headlesshq/mc-runtime-test/issues/131)) ([4c073a3](https://github.com/headlesshq/mc-runtime-test/commit/4c073a33e446110b6bcb647b78ffcb063e8299cb))
+
 ## [4.3.0](https://github.com/headlesshq/mc-runtime-test/compare/4.2.0...4.3.0) (2026-04-04)
 
 
