@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.0](https://github.com/headlesshq/mc-runtime-test/compare/4.3.1...4.4.0) (2026-04-21)
+
+
+### Features
+
+* **version:** Support 26.1.2 ([#134](https://github.com/headlesshq/mc-runtime-test/issues/134)) ([4ab4f75](https://github.com/headlesshq/mc-runtime-test/commit/4ab4f756a9d48005f712c97b58ec93392426863b))
+
 ## [4.3.1](https://github.com/headlesshq/mc-runtime-test/compare/4.3.0...4.3.1) (2026-04-07)
 
 
