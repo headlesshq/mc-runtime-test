@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.earth.mc_runtime_test.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "ICreateWorldScreen",
+    "MixinMinecraft",
+    "MixinGui"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
