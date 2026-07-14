@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.5.0](https://github.com/headlesshq/mc-runtime-test/compare/4.4.0...4.5.0) (2026-07-14)
+
+
+### Features
+
+* **mc-versions:** Support 26.2 ([#138](https://github.com/headlesshq/mc-runtime-test/issues/138)) ([ca0d85d](https://github.com/headlesshq/mc-runtime-test/commit/ca0d85dd10e6318ea77a3b034309df6722bb51a2))
+
+
+### Bug Fixes
+
+* **mc-versions:** support 26.2 and fix caches on macOS and Windows ([#140](https://github.com/headlesshq/mc-runtime-test/issues/140)) ([89d0221](https://github.com/headlesshq/mc-runtime-test/commit/89d0221837ad06e08d9ba8fc5037bc1f618cdb6f))
+
 ## [4.4.0](https://github.com/headlesshq/mc-runtime-test/compare/4.3.1...4.4.0) (2026-04-21)
 
 
