@@ -128,10 +128,12 @@ runs:
 
     - if: inputs.fabric-api != 'none'
       name: Download fabric-api v${{ inputs.fabric-api }}
-      run: >
-        curl --create-dirs -o run/mods/fabric-api-${{ inputs.fabric-api }}+${{ inputs.mc }}.jar
-        https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/${{ inputs.fabric-api }}+${{ inputs.mc }}/fabric-api-${{ inputs.fabric-api }}+${{ inputs.mc }}.jar
-      shell: bash
+      uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
+      with:
+        repository: FabricMC/fabric-api
+        tag: '${{ inputs.fabric-api }}+${{ inputs.mc }}'
+        fileName: 'fabric-api-${{ inputs.fabric-api }}+${{ inputs.mc }}.jar'
+        out-file-path: run/mods
 
     - if: inputs.fabric-gametest-api != 'none'
       name: Download fabric-gametest-api v${{ inputs.fabric-gametest-api }}
