@@ -41,7 +41,7 @@ inputs:
     default: "true"
   hmc-version:
     description: HeadlessMC version
-    default: "2.9.0"
+    default: "2.10.0"
   cache-mc:
     description: Cache .minecraft (blacksmith, github, true (defaults to blacksmith), false)
     default: "github"
@@ -56,6 +56,7 @@ runs:
         cat <<EOF >> HeadlessMC/config.properties
         hmc.java.versions=$JAVA_HOME/bin/java
         hmc.gamedir=$PWD/run
+        hmc.mcdir=$HOME/.minecraft
         hmc.offline=true
         hmc.rethrow.launch.exceptions=true
         hmc.exit.on.failed.command=true
@@ -68,9 +69,11 @@ runs:
         New-Item -ItemType Directory -Force -Path HeadlessMC, run/mods | Out-Null
         $currentDir = (Get-Location).Path -replace '\\', '\\\\'
         $javaPath = "$env:JAVA_HOME\bin\java.exe" -replace '\\', '\\\\'
+        $mcDir = "$HOME\.minecraft" -replace '\\', '\\\\'
         $config = @(
           "hmc.java.versions=$javaPath",
           "hmc.gamedir=$currentDir\\run",
+          "hmc.mcdir=$mcDir",
           "hmc.offline=true",
           "hmc.rethrow.launch.exceptions=true",
           "hmc.exit.on.failed.command=true"
@@ -95,15 +98,15 @@ runs:
       name: Cache Minecraft
       uses: useblacksmith/cache@c5fe29eb0efdf1cf4186b9f7fcbbcbc0cf025662 # v5
       with:
-        path: /home/runner/.minecraft
-        key: ${{ inputs.mc }}-${{ inputs.modloader }}-hmc
+        path: ~/.minecraft
+        key: ${{ runner.os }}-${{ inputs.mc }}-${{ inputs.modloader }}-hmc
 
     - if: inputs.cache-mc == 'github'
       name: Cache Minecraft
       uses: actions/cache@v4
       with:
-        path: /home/runner/.minecraft
-        key: ${{ inputs.mc }}-${{ inputs.modloader }}-hmc
+        path: ~/.minecraft
+        key: ${{ runner.os }}-${{ inputs.mc }}-${{ inputs.modloader }}-hmc
 
     - name: Download ${{ inputs.modloader }}-${{ inputs.mc }}
       run: |
