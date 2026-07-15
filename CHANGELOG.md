@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.1](https://github.com/headlesshq/mc-runtime-test/compare/4.5.0...4.5.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* **fabric-api:** download runtime JAR from GitHub Releases ([#142](https://github.com/headlesshq/mc-runtime-test/issues/142)) ([409cd79](https://github.com/headlesshq/mc-runtime-test/commit/409cd7966277a6f62f6d14f6496fe89496eff7dd))
+
 ## [4.5.0](https://github.com/headlesshq/mc-runtime-test/compare/4.4.0...4.5.0) (2026-07-14)
 
 
