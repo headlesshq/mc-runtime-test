@@ -138,7 +138,7 @@ for (String platform_capitalized : ['Fabric', 'Neoforge', 'Lexforge']) {
 
 dependencies {
     compileOnly 'org.spongepowered:mixin:0.8.5-SNAPSHOT'
-    compileOnly 'me.earth.headlessmc:headlessmc:1.8.1'
+    compileOnly 'me.earth.headlessmc:headlessmc:2.6.2'
     lwjglAgent 'me.earth.headlessmc:headlessmc-lwjgl:1.8.1'
     // yes, I actually want this at runtime to use assertions!
     jarLibs 'org.junit.jupiter:junit-jupiter-api:5.10.1'
