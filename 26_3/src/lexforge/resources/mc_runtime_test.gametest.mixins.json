@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.earth.mc_runtime_test.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "MixinGameTestHooks"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
