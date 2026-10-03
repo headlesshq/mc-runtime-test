@@ -34,7 +34,7 @@ This project helps streamline that process by automating the client launch and b
 ### Supported Minecraft Versions and Modloaders
 | Version         | Forge           | Fabric          | NeoForge        |
 |-----------------|----------------|----------------|----------------|
-| 26.1 - 26.2     | ✔️              | ✔️              | ✔️              |
+| 26.1 - 26.3     | ✔️              | ✔️              | ✔️              |
 | 1.21 - 1.21.11  | ✔️              | ✔️              | ✔️              |
 | 1.20.2 - 1.20.6 | ✔️              | ✔️              | ✔️              |
 | 1.20.1          | ✔️              | ✔️              | ⚠️              |
@@ -138,6 +138,20 @@ You can also use the `headlessmc-command` input to specify a JVM argument to enf
 <pre lang="bash">
 -DMcRuntimeGameTestMinExpectedGameTests=1
 </pre>
+
+For 26.3, `-DMcRuntimeGameTestInstance=minecraft:always_pass` selects one
+registered test instance and places its structure in the fresh world. Combine
+it with `-DMcRuntimeGameTestMinExpectedGameTests=1` to prevent an empty run from
+passing. Without the selector, discovery still uses nearby test blocks.
+No-render runs on 26.3 also need a HeadlessMC release containing the SDL update.
+
+The 26.3 harness enables GameTests in installed Forge and NeoForge clients when
+`McRuntimeGameTest` is true. Those loaders normally disable their GameTest ticker
+in production, even with the `enableGameTest` property. Fabric uses the vanilla
+ticker. Set `-DMcRuntimeGameTest=false` for a world-loading check without tests.
+
+Failed tests finish the batch and save the world before the client exits with an
+error. `McRuntimeGameTestFailOnOptional=false` still allows optional failures.
 
 ---
 
