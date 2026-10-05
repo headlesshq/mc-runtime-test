@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.2](https://github.com/headlesshq/mc-runtime-test/compare/4.5.1...4.5.2) (2026-10-03)
+
+
+### Bug Fixes
+
+* **mc-versions:** add the 26.3 runtime-test module ([#152](https://github.com/headlesshq/mc-runtime-test/issues/152)) ([8112e68](https://github.com/headlesshq/mc-runtime-test/commit/8112e689c1042727a25a84eafdae0c663cd288d7))
+
 ## [4.5.1](https://github.com/headlesshq/mc-runtime-test/compare/4.5.0...4.5.1) (2026-07-15)
 
 
