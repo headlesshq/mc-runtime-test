@@ -13,8 +13,8 @@ inputs:
     description: Modloader to install (forge, neoforge, fabric)
     required: true
   regex:
-    description: Regex to match the modloader jar (i.e. .*fabric.*)
-    required: true
+    description: Deprecated and ignored since HeadlessMc 3, the version is selected by modloader and mc
+    required: false
   java:
     description: Java version to use (8, 16, 17, 21, 25)
     required: true
@@ -37,11 +37,11 @@ inputs:
     description: Fabric GameTest API version (e.g. 1.3.5+85d85a934f) or none
     default: "none"
   download-hmc:
-    description: Download HeadlessMC
+    description: Download HeadlessMC (if false, headlessmc.jar must be in the working directory)
     default: "true"
   hmc-version:
     description: HeadlessMC version
-    default: "2.10.0"
+    default: "3.0.0-RC2"
   cache-mc:
     description: Cache .minecraft (blacksmith, github, true (defaults to blacksmith), false)
     default: "github"
@@ -54,13 +54,13 @@ runs:
       run: |
         mkdir -p HeadlessMC run/mods
         cat <<EOF >> HeadlessMC/config.properties
-        hmc.java.versions=$JAVA_HOME/bin/java
-        hmc.gamedir=$PWD/run
-        hmc.mcdir=$HOME/.minecraft
-        hmc.offline=true
-        hmc.rethrow.launch.exceptions=true
-        hmc.exit.on.failed.command=true
+        hmc.java.versions=$JAVA_HOME
+        hmc.files.game=$PWD/run
+        hmc.files.game-for-each-version=false
+        hmc.files.mc=$HOME/.minecraft
+        hmc.jline.enabled=false
         EOF
+        echo "HMC_FILES_LOCATION=$PWD/HeadlessMC" >> "$GITHUB_ENV"
       shell: bash
 
     - name: Bootstrap HeadlessMc (Windows)
@@ -68,17 +68,17 @@ runs:
       run: |
         New-Item -ItemType Directory -Force -Path HeadlessMC, run/mods | Out-Null
         $currentDir = (Get-Location).Path -replace '\\', '\\\\'
-        $javaPath = "$env:JAVA_HOME\bin\java.exe" -replace '\\', '\\\\'
+        $javaHome = "$env:JAVA_HOME" -replace '\\', '\\\\'
         $mcDir = "$HOME\.minecraft" -replace '\\', '\\\\'
         $config = @(
-          "hmc.java.versions=$javaPath",
-          "hmc.gamedir=$currentDir\\run",
-          "hmc.mcdir=$mcDir",
-          "hmc.offline=true",
-          "hmc.rethrow.launch.exceptions=true",
-          "hmc.exit.on.failed.command=true"
+          "hmc.java.versions=$javaHome",
+          "hmc.files.game=$currentDir\\run",
+          "hmc.files.game-for-each-version=false",
+          "hmc.files.mc=$mcDir",
+          "hmc.jline.enabled=false"
         )
         $config | Set-Content -Path HeadlessMC\config.properties -Encoding utf8
+        "HMC_FILES_LOCATION=$((Get-Location).Path)\HeadlessMC" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       shell: pwsh
 
     - if: inputs.dummy-assets == 'true'
@@ -86,13 +86,33 @@ runs:
       run: echo hmc.assets.dummy=true >> HeadlessMC/config.properties
       shell: bash
 
+    - name: Remember Java
+      run: echo "MCRT_JAVA_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+      shell: bash
+
+    - id: hmc-java
+      name: Setup Java 25 for HeadlessMC
+      uses: actions/setup-java@v5
+      with:
+        java-version: 25
+        distribution: temurin
+
+    - name: Restore Java
+      run: |
+        echo "HMC_JAVA=${{ steps.hmc-java.outputs.path }}/bin/java" >> "$GITHUB_ENV"
+        if [ -n "$MCRT_JAVA_HOME" ]; then
+          echo "JAVA_HOME=$MCRT_JAVA_HOME" >> "$GITHUB_ENV"
+          echo "$MCRT_JAVA_HOME/bin" >> "$GITHUB_PATH"
+        fi
+      shell: bash
+
     - if: inputs.download-hmc == 'true'
       name: Get HeadlessMC
       uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
       with:
-        repository: 3arthqu4ke/headlessmc
+        repository: headlesshq/headlessmc
         tag: ${{ inputs.hmc-version }}
-        fileName: headlessmc-launcher-${{ inputs.hmc-version }}.jar
+        fileName: headlessmc.jar
 
     - if: inputs.cache-mc == 'true' || inputs.cache-mc == 'blacksmith'
       name: Cache Minecraft
@@ -110,10 +130,7 @@ runs:
 
     - name: Download ${{ inputs.modloader }}-${{ inputs.mc }}
       run: |
-        if [ ! -f "$HOME/.minecraft/versions/${{ inputs.mc }}/${{ inputs.mc }}.json" ]; then
-          java -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command download ${{ inputs.mc }}
-          java -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command ${{ inputs.modloader }} ${{ inputs.mc }} --java ${{ inputs.java }}
-        fi
+        "$HMC_JAVA" -jar headlessmc.jar version install ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
 
     - id: get-mcrt
@@ -154,10 +171,11 @@ runs:
       name: Run game with xvfb
       run: | # TODO: install xrandr conditionally per #22
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
-        xvfb-run java -Dhmc.check.xvfb=true -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command launch ${{ inputs.regex }} -regex ${{ inputs.headlessmc-command }}
+        xvfb-run "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
 
     - if: inputs.xvfb != 'true'
       name: Run game
-      run: java -jar headlessmc-launcher-${{ inputs.hmc-version }}.jar --command launch ${{ inputs.regex }} -regex ${{ inputs.headlessmc-command }}
+      run: |
+        "$HMC_JAVA" -jar headlessmc.jar launch -lwjgl --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash

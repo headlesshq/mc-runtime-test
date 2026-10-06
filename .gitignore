@@ -42,3 +42,4 @@ replay_*.log
 /logs/
 /.architectury-transformer/
 /.venv/
+/headlessmc-code

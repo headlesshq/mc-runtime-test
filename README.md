@@ -104,7 +104,7 @@ The following table summarizes the available inputs for customization:
 |-----------------------|-----------------------------------------------------------|----------|------------------------------------------|
 | `mc`                  | Minecraft version to run                                  | Yes      | `1.20.4`                                 |
 | `modloader`           | Modloader to install                                      | Yes      | `forge`, `neoforge`, `fabric`            |
-| `regex`               | Regex to match the modloader jar                          | Yes      | `.*fabric.*`                             |
+| `regex`               | Deprecated, ignored since HeadlessMC 3                    |          | `.*fabric.*`                             |
 | `java`                | Java version to use                                       | Yes      | `8`, `16`, `17`, `21`                    |
 | `mc-runtime-test`     | MC-Runtime-Test jar to download                           | Yes      | `none`, `lexforge`, `neoforge`, `fabric` |
 | `dummy-assets`        | Use dummy assets during testing                           |          | `true`, `false`                          |
@@ -112,8 +112,8 @@ The following table summarizes the available inputs for customization:
 | `headlessmc-command`  | Command-line arguments for HeadlessMC                     |          | `--jvm "-Djava.awt.headless=true"`       |
 | `fabric-api`          | Fabric API version to download or none                    |          | `0.97.0`, `none`                         |
 | `fabric-gametest-api` | Fabric GameTest API version or none                       |          | `1.3.5+85d85a934f`, `none`               |
-| `download-hmc`        | Download HeadlessMC                                       |          | `true`, `false`                          |
-| `hmc-version`         | HeadlessMC version                                        |          | `2.10.0`, `1.5.0`                         |
+| `download-hmc`        | Download HeadlessMC (if `false`, `headlessmc.jar` must be in the working directory) |          | `true`, `false` |
+| `hmc-version`         | HeadlessMC version (3.0.0 or newer)                       |          | `3.0.0-RC2`                              |
 | `cache-mc`            | Cache `.minecraft` <br/>(`true` defaults to `blacksmith`) |          | `github`, `blacksmith`, `true`, `false`  |
 
 ---
