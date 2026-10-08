@@ -41,7 +41,7 @@ inputs:
     default: "true"
   hmc-version:
     description: HeadlessMC version
-    default: "3.0.0-RC2"
+    default: "3.0.0-RC3"
   cache-mc:
     description: Cache .minecraft (blacksmith, github, true (defaults to blacksmith), false)
     default: "github"
@@ -171,7 +171,7 @@ runs:
       name: Run game with xvfb
       run: | # TODO: install xrandr conditionally per #22
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
-        xvfb-run "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
+        xvfb-run -a -s "-screen 0 1920x1080x24" "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
 
     - if: inputs.xvfb != 'true'
