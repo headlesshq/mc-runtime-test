@@ -55,7 +55,7 @@ jobs:
       run-matrix: ${{ steps.matrices.outputs.run-matrix }}
     steps:
       - name: Checkout 
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 1
           ref: ${{ inputs.ref || github.ref }}
@@ -183,7 +183,7 @@ jobs:
         ${{ insert }}: ${{ fromJSON(needs.matrices.outputs.run-matrix) }}
     steps:
       - name: Checkout # TODO: simplify away this step, currently needed for `uses: ./`
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 1
 
