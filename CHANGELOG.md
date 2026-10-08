@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.0](https://github.com/headlesshq/mc-runtime-test/compare/4.5.2...5.0.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **launcher:** HeadlessMc 3.0.0-RC3 ([#156](https://github.com/headlesshq/mc-runtime-test/issues/156))
+
+### Features
+
+* **launcher:** HeadlessMc 3.0.0-RC3 ([#156](https://github.com/headlesshq/mc-runtime-test/issues/156)) ([286a6d6](https://github.com/headlesshq/mc-runtime-test/commit/286a6d64008be90fc82f8ffadb8f111adab6907e))
+
 ## [4.5.2](https://github.com/headlesshq/mc-runtime-test/compare/4.5.1...4.5.2) (2026-10-03)
 
 
