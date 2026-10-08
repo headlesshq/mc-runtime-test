@@ -222,7 +222,7 @@ jobs:
           regex: ${{ matrix.version.regex }}
           java: ${{ matrix.version.java }}
           xvfb: ${{ matrix.version.xvfb }}
-          headlessmc-command: ${{ !matrix.version.xvfb && '-lwjgl' || '' }} --retries 3 --jvm -Djava.awt.headless=true
+          headlessmc-command: --retries 3 --jvm -Djava.awt.headless=true
 
   release:
     if: needs.release-please.outputs.release_created == 'true'
