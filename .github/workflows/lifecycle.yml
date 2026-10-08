@@ -199,7 +199,7 @@ jobs:
 
       - name: Setup Github Java temurin-${{ matrix.version.java }}
         if: matrix.version.cache == 'github'
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           java-version: ${{ matrix.version.java }}
           distribution: temurin
