@@ -170,8 +170,8 @@ runs:
     - if: inputs.xvfb == 'true'
       name: Run game with xvfb
       run: | # TODO: install xrandr conditionally per #22
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
-        xvfb-run -a -s "-screen 0 1920x1080x24" "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils libgl1-mesa-dri mesa-vulkan-drivers
+        xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
 
     - if: inputs.xvfb != 'true'
