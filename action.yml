@@ -53,12 +53,16 @@ runs:
       if: runner.os != 'Windows'
       run: |
         mkdir -p HeadlessMC run/mods
+        if [ -s HeadlessMC/config.properties ] && [ -n "$(tail -c1 HeadlessMC/config.properties)" ]; then
+          echo >> HeadlessMC/config.properties
+        fi
         cat <<EOF >> HeadlessMC/config.properties
         hmc.java.versions=$JAVA_HOME
         hmc.files.game=$PWD/run
         hmc.files.game-for-each-version=false
         hmc.files.mc=$HOME/.minecraft
         hmc.jline.enabled=false
+        hmc.launcher.crash-report-watcher=true
         EOF
         echo "HMC_FILES_LOCATION=$PWD/HeadlessMC" >> "$GITHUB_ENV"
       shell: bash
@@ -75,9 +79,14 @@ runs:
           "hmc.files.game=$currentDir\\run",
           "hmc.files.game-for-each-version=false",
           "hmc.files.mc=$mcDir",
-          "hmc.jline.enabled=false"
+          "hmc.jline.enabled=false",
+          "hmc.launcher.crash-report-watcher=true"
         )
-        $config | Set-Content -Path HeadlessMC\config.properties -Encoding utf8
+        $configPath = 'HeadlessMC\config.properties'
+        if ((Test-Path $configPath) -and ($raw = Get-Content -Raw $configPath) -and -not $raw.EndsWith("`n")) {
+          Add-Content -Path $configPath -Value '' -Encoding utf8
+        }
+        $config | Add-Content -Path $configPath -Encoding utf8
         "HMC_FILES_LOCATION=$((Get-Location).Path)\HeadlessMC" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       shell: pwsh
 

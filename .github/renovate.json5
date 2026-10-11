@@ -16,6 +16,10 @@
     'prIgnoreNotification',
   ],
   rebaseWhen: 'conflicted',
+  enabledManagers: [
+    'github-actions',
+    'gradle-wrapper',
+  ],
   packageRules: [
     {
       matchUpdateTypes: [
