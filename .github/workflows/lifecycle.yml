@@ -13,11 +13,11 @@ name: Lifecycle
       - reopened
   workflow_dispatch:
     inputs:
-      dirs:
-        description: Comma-delimited directories to build and run (i.e. api,1_20,1_21 )
+      mc:
+        description: Comma-delimited Minecraft versions to run (i.e. 1.20.4,26.1.2 )
         default: "all"
       ref:
-        description: Git ref to checkout before build (i.e. my-feature-branch )
+        description: Git ref to checkout before running (i.e. my-feature-branch )
         default: "main"
 
 concurrency: # FIXME: prevent release commit cancellation
@@ -51,87 +51,46 @@ jobs:
     needs: release-please
     runs-on: ubuntu-latest
     outputs:
-      build-matrix: ${{ steps.matrices.outputs.build-matrix }}
       run-matrix: ${{ steps.matrices.outputs.run-matrix }}
     steps:
-      - name: Checkout 
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 1
-          ref: ${{ inputs.ref || github.ref }}
+      - name: Get ci-data.json from mc-runtime-test-mod
+        run: curl -fsSL -o ci-data.json https://raw.githubusercontent.com/headlesshq/mc-runtime-test-mod/main/ci-data.json
+        shell: bash
 
-      - if: github.event_name != 'workflow_dispatch'
-        id: paths
-        name: Get paths
-        run: |
-          { delimiter="$(openssl rand -hex 8)"
-          echo "filter<<${delimiter}"
-          for dir in $(find . -maxdepth 1 -type d -not -path "./.git*" -print | cut -d/ -f2-); do
-            echo "'$dir' : ['$dir/**']"
-          done; echo "${delimiter}"; } >> "${GITHUB_OUTPUT}"
-          echo "${GITHUB_OUTPUT}"
-          cat "${GITHUB_OUTPUT}" || true
-
-      - if: github.event_name != 'workflow_dispatch'
-        id: filter
-        name: Filter
-        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
-        with:
-          filters: |
-            ${{ steps.paths.outputs.filter }}
-
-      - id: matrices # TODO: build origin matrices dynamically, consider collapsing this into a .py
+      - id: matrices
         name: Construct matrices
         run: |
           import os
           import json
           import copy
 
-          build_matrix = {"include": []}
           run_matrix = {"version": []}
 
           with open('ci-data.json') as f:
-              ci_data = json.load(f)
-          
-          build_data = ci_data['build_data']
-          run_data = ci_data['run_data']
-
-          dirs_to_filter = []
-          mc_versions = []
+              run_data = json.load(f)['run_data']
 
           match os.getenv('GITHUB_EVENT_NAME'):
             case 'pull_request':
-              if "${{ steps.filter.outcome }}" == "success":
-                # Filter matrices based on the detected changes
-                dirs_to_filter = json.loads('${{ steps.filter.outputs.changes }}')
+              if '${{ github.head_ref }}'.startswith('release-please--'):
+                # Run all versions before releasing
+                run_matrix['version'] = run_data
+              else:
+                # Otherwise only run the latest version (3 modloaders)
+                run_matrix['version'] = run_data[:3]
 
             case 'workflow_dispatch':
-              input_dirs = '${{ github.event.inputs.dirs }}'
-              print(input_dirs)
-              if input_dirs == 'all':
-                # If "all" is specified in the input, run all possible builds and runs
-                build_matrix['include'], run_matrix['version'] = build_data, run_data
-                print(build_matrix)
-                print(run_matrix)
+              input_mc = '${{ github.event.inputs.mc }}'
+              if input_mc == 'all':
+                run_matrix['version'] = run_data
               else:
-                # Otherwise, filter based on the directories listed in the input
-                dirs_to_filter = [item.strip() for item in input_dirs.split(',')]
-
-            case 'push':
-              if '${{ needs.release-please.outputs.release_created }}' == 'true':
-                # If a release is created, use the full matrices
-                build_matrix['include'], run_matrix['version'] = build_data, run_data
-
-          if dirs_to_filter:
-            build_matrix['include'].extend([item for item in build_data if item["dir"] in dirs_to_filter and ("mc" not in item or (item["mc"] in mc_versions or not mc_versions))])
-            mc_versions = mc_versions if mc_versions else [item.get("mc") for item in build_matrix["include"] if "mc" in item]
-            run_matrix['version'].extend([item for item in run_data if item["mc"] in mc_versions])
+                mc_versions = [item.strip() for item in input_mc.split(',')]
+                run_matrix['version'] = [item for item in run_data if item['mc'] in mc_versions]
 
           for entry in run_matrix['version']:
             entry['runner'] = 'ubuntu-latest' #'blacksmith-2vcpu-ubuntu-2204'
             entry['cache'] = 'github' #'blacksmith'
             entry['xvfb'] = True
-          
+
           additional_runs = []
           for item in run_matrix['version']:
             #runners = [ ('blacksmith-2vcpu-ubuntu-2204', 'blacksmith') ] # also add non-xvfb runs for ubuntu
@@ -144,38 +103,18 @@ jobs:
               entry['cache'] = cache
               entry['xvfb'] = False
               additional_runs.append(entry)
-          
+
           run_matrix['version'] += additional_runs
-          
+
           with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
-            print(json.dumps(build_matrix, indent=2))
-            fh.write(f'build-matrix={json.dumps(build_matrix)}\n')
             print(json.dumps(run_matrix, indent=2))
             fh.write(f'run-matrix={json.dumps(run_matrix)}\n')
         shell: python {0}
 
-  build:
-    if: fromJSON(needs.matrices.outputs.build-matrix).include[0] != null
-    name: Build
-    needs: matrices
-    strategy:
-      fail-fast: false
-      matrix:
-        ${{ insert }}: ${{ fromJSON(needs.matrices.outputs.build-matrix) }}
-    uses: ./.github/workflows/flex-build.yml
-    with:
-      dir: ${{ matrix.dir }}
-      mc: ${{ matrix.mc }}
-      lex: ${{ matrix.lex }}
-      neo: ${{ matrix.neo }}
-      java: ${{ matrix.java }}
-
   run:
     if: github.event_name != 'push' && fromJSON(needs.matrices.outputs.run-matrix).version[0] != null
     name: Run tests
-    needs:
-      - matrices
-      - build
+    needs: matrices
     runs-on: ${{ matrix.version.runner }}
     strategy:
       fail-fast: false
@@ -186,16 +125,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 1
-
-      - name: Download artifact
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: jars-${{ matrix.version.mc }}
-
-      - name: Bootstrap mods
-        run: |
-          mkdir -p run/mods
-          cp mc-runtime-test-*-${{ matrix.version.type }}-release.jar run/mods
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Setup Github Java temurin-${{ matrix.version.java }}
         if: matrix.version.cache == 'github'
@@ -217,54 +147,8 @@ jobs:
         with:
           cache-mc: ${{ matrix.version.cache }}
           mc: ${{ matrix.version.mc }}
-          mc-runtime-test: none
+          mc-runtime-test: ${{ matrix.version.type }}
           modloader: ${{ matrix.version.modloader }}
-          regex: ${{ matrix.version.regex }}
           java: ${{ matrix.version.java }}
           xvfb: ${{ matrix.version.xvfb }}
           headlessmc-command: --retries 3 --jvm -Djava.awt.headless=true
-
-  release:
-    if: needs.release-please.outputs.release_created == 'true'
-    needs:
-      - release-please
-      - build
-    name: Release
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-
-      - name: Upload release artifacts
-        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: jars-*/*-release.jar
-          tag: ${{ needs.release-please.outputs.tag_name }}
-          overwrite: true
-          file_glob: true
-
-      - name: Upload api artifacts
-        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: jars-*/*-api-*.jar # TODO: make API jar names consistent with release jars, then simplify away this step
-          tag: ${{ needs.release-please.outputs.tag_name }}
-          overwrite: true
-          file_glob: true
-
-  clean: # TODO: run this conditionally per #22
-    name: Clean up
-    needs:
-      - run
-      - release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete artifacts
-        uses: geekyeggo/delete-artifact@f275313e70c08f6120db482d7a6b98377786765b # v5.1.0
-        with:
-          name: |
-            jars-*
-          failOnError: false
