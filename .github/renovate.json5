@@ -14,8 +14,7 @@
   ],
   rebaseWhen: 'conflicted',
   enabledManagers: [
-    'github-actions',
-    'gradle-wrapper',
+    'github-actions'
   ],
   packageRules: [
     {
