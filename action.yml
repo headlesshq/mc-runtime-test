@@ -120,7 +120,7 @@ runs:
 
     - if: inputs.download-hmc == 'true'
       name: Get HeadlessMC
-      uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
+      uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1.13
       with:
         repository: headlesshq/headlessmc
         tag: ${{ inputs.hmc-version }}
@@ -148,7 +148,7 @@ runs:
     - id: get-mcrt
       if: inputs.mc-runtime-test != 'none'
       name: Get mc-runtime-test
-      uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
+      uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1.13
       with:
         repository: headlesshq/mc-runtime-test-mod
         tag: '${{ inputs.mc }}-${{ inputs.mc-runtime-test-version }}'
@@ -157,7 +157,7 @@ runs:
 
     - if: inputs.fabric-api != 'none'
       name: Download fabric-api v${{ inputs.fabric-api }}
-      uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
+      uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1.13
       with:
         repository: FabricMC/fabric-api
         tag: '${{ inputs.fabric-api }}+${{ inputs.mc }}'
