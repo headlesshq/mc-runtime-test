@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.0.0](https://github.com/headlesshq/mc-runtime-test/compare/4.5.2...5.0.0) (2026-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* **launcher:** HeadlessMc 3.0.0-RC3 ([#156](https://github.com/headlesshq/mc-runtime-test/issues/156))
+
+### Features
+
+* **HeadlessMc:** HeadlessMc 3.0.0-RC5 ([#158](https://github.com/headlesshq/mc-runtime-test/issues/158)) ([4ed85cc](https://github.com/headlesshq/mc-runtime-test/commit/4ed85ccafb0ba71a8698e8e220dc179a1cd164a1))
+* **launcher:** HeadlessMc 3.0.0-RC3 ([#156](https://github.com/headlesshq/mc-runtime-test/issues/156)) ([286a6d6](https://github.com/headlesshq/mc-runtime-test/commit/286a6d64008be90fc82f8ffadb8f111adab6907e))
+* **mod:** move mod to mc-runtime-test-mod repository ([#163](https://github.com/headlesshq/mc-runtime-test/issues/163)) ([1ae68aa](https://github.com/headlesshq/mc-runtime-test/commit/1ae68aa46a06334bb7b32b8de105f80df76f1f21))
+
+
+### Bug Fixes
+
+* **action:** make config.properties append ([#159](https://github.com/headlesshq/mc-runtime-test/issues/159)) ([500ce35](https://github.com/headlesshq/mc-runtime-test/commit/500ce35dd0f4a1cd53557efd7f248e9489b75976))
+
 ## [4.5.2](https://github.com/headlesshq/mc-runtime-test/compare/4.5.1...4.5.2) (2026-10-03)
 
 
