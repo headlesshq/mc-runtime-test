@@ -22,8 +22,11 @@ inputs:
     description: Use dummy assets during testing
     default: "true"
   mc-runtime-test:
-    description: MC-Runtime-Test jar to download (none, lexforge, neoforge, fabric)
+    description: MC-Runtime-Test jar to download (none, forge, lexforge, neoforge, fabric)
     required: true
+  mc-runtime-test-version:
+    description: Version of the mc-runtime-test-mod release to download (latest, or a version, e.g. 4.5.2)
+    default: "latest"
   xvfb:
     description: Runs the game with Xvfb (if false, add the -lwjgl argument)
     default: "true"
@@ -147,9 +150,9 @@ runs:
       name: Get mc-runtime-test
       uses: robinraju/release-downloader@a96f54c1b5f5e09e47d9504526e96febd949d4c2 # v1.11
       with:
-        repository: headlesshq/mc-runtime-test
-        tag: "4.5.2" # x-release-please-version
-        fileName: 'mc-runtime-test-${{ inputs.mc }}-*-${{ inputs.mc-runtime-test }}-release.jar'
+        repository: headlesshq/mc-runtime-test-mod
+        tag: '${{ inputs.mc }}-${{ inputs.mc-runtime-test-version }}'
+        fileName: "mc-runtime-test-${{ inputs.mc }}-${{ inputs.mc-runtime-test == 'lexforge' && 'forge' || inputs.mc-runtime-test }}-*.jar"
         out-file-path: run/mods
 
     - if: inputs.fabric-api != 'none'
