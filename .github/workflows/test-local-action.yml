@@ -19,6 +19,9 @@ name: Test local action
       mc-runtime-test:
         description: MC-Runtime-Test jar to download (none, lexforge, neoforge, fabric)
         default: fabric
+      mc-runtime-test-version:
+        description: mc-runtime-test-mod release to download (latest, or e.g. 4.5.2)
+        default: latest
       java:
         description: Java version to use
         default: "17"
@@ -63,6 +66,7 @@ jobs:
           modloader: ${{ github.event.inputs.modloader }}
           regex: ${{ github.event.inputs.regex }}
           mc-runtime-test: ${{ github.event.inputs.mc-runtime-test }}
+          mc-runtime-test-version: ${{ github.event.inputs.mc-runtime-test-version }}
           java: ${{ github.event.inputs.java }}
           xvfb: ${{ github.event.inputs.xvfb }}
           headlessmc-command: ${{ !inputs.xvfb && '-lwjgl' || '' }} --retries 3 --jvm -Djava.awt.headless=true

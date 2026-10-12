@@ -117,7 +117,8 @@ The following table summarizes the available inputs for customization:
 | `modloader`           | Modloader to install                                                                | Yes      | `forge`, `neoforge`, `fabric`            |
 | `regex`               | Deprecated, ignored since HeadlessMC 3                                              |          | `.*fabric.*`                             |
 | `java`                | Java version to use                                                                 | Yes      | `8`, `16`, `17`, `21`                    |
-| `mc-runtime-test`     | MC-Runtime-Test jar to download                                                     | Yes      | `none`, `lexforge`, `neoforge`, `fabric` |
+| `mc-runtime-test`     | MC-Runtime-Test jar to download                                                     | Yes      | `none`, `forge`, `neoforge`, `fabric`    |
+| `mc-runtime-test-version` | Release of [mc-runtime-test-mod](https://github.com/headlesshq/mc-runtime-test-mod) to download |  | `4.5.2` (default, the action's version), `latest` |
 | `dummy-assets`        | Use dummy assets during testing                                                     |          | `true`, `false`                          |
 | `xvfb`                | Runs the game with Xvfb                                                             |          | `true`, `false`                          |
 | `headlessmc-command`  | Command-line arguments for HeadlessMC                                               |          | `--jvm "-Djava.awt.headless=true"`       |

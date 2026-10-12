@@ -9,7 +9,6 @@
       "release-type": "simple",
       "extra-files": [
         "action.yml",
-        "api/gradle.properties",
         "README.md"
       ]
     }
