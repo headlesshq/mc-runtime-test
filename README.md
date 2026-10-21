@@ -24,6 +24,8 @@ bugs in Minecraft mods.
 Manual testing for different Minecraft versions and modloaders can be time-consuming, especially when bugs occur only in
 runtime environments launched via a Minecraft launcher.
 This project helps streamline that process by automating the client launch and basic test execution.
+This repository contains the code for the GitHub Action, you can find the code for the mods that enable it 
+[here](https://github.com/headlesshq/mc-runtime-test-mod).
 
 ## Features
 
