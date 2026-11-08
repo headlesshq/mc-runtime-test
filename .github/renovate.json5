@@ -16,7 +16,11 @@
   enabledManagers: [
     'github-actions',
     'devcontainer',
+    'nix',
   ],
+  nix: {
+    enabled: true,
+  },
   packageRules: [
     {
       matchUpdateTypes: [
@@ -41,6 +45,18 @@
       addLabels: [
         'dependency/patch',
       ],
+    },
+    {
+      matchManagers: [
+        'nix',
+      ],
+      groupName: 'nix flake inputs',
+      schedule: [
+        'on the first day of the month',
+      ],
+      semanticCommitType: 'build',
+      semanticCommitScope: 'deps',
+      automerge: false,
     },
   ],
 }
