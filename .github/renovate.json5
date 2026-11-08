@@ -14,7 +14,8 @@
   ],
   rebaseWhen: 'conflicted',
   enabledManagers: [
-    'github-actions'
+    'github-actions',
+    'devcontainer',
   ],
   packageRules: [
     {
