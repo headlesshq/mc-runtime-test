@@ -171,6 +171,43 @@ ticker. Set `-DMcRuntimeGameTest=false` for a world-loading check without tests.
 Failed tests finish the batch and save the world before the client exits with an
 error. `McRuntimeGameTestFailOnOptional=false` still allows optional failures.
 
+## Development container
+
+The repository ships a [devcontainer](https://containers.dev) in `.devcontainer/devcontainer.json`.
+Open it with "Reopen in Container" in VS Code, in GitHub Codespaces, or with the
+[devcontainer CLI](https://github.com/devcontainers/cli):
+
+```bash
+npx @devcontainers/cli up --workspace-folder .
+npx @devcontainers/cli exec --workspace-folder . bash
+```
+
+The container contains the GitHub CLI, `actionlint`, `shellcheck`, `yq` and Temurin JDK 25.
+The mod itself is developed in [mc-runtime-test-mod](https://github.com/headlesshq/mc-runtime-test-mod).
+
+Lint the workflows, which also runs `shellcheck` on their `run:` blocks:
+
+```bash
+actionlint
+```
+
+`actionlint` does not read `action.yml`, so extract its bash steps and check them with `shellcheck`:
+
+```bash
+mkdir -p /tmp/action-steps
+n=$(yq '[.runs.steps[] | select(.shell == "bash")] | length' action.yml)
+for i in $(seq 0 $((n - 1))); do
+  yq "[.runs.steps[] | select(.shell == \"bash\")][$i].run" action.yml \
+    | sed -E 's/\$\{\{[^}]*\}\}/GH_EXPR/g' > "/tmp/action-steps/step-$i.sh"
+done
+shellcheck -s bash /tmp/action-steps/*.sh
+```
+
+The JDK lets you download a HeadlessMc jar and run single action steps by hand,
+for example `java -jar headlessmc.jar version install fabric 1.21.4`.
+Full runs of the action need a GitHub runner, so they happen in CI or with
+[`act`](https://github.com/nektos/act) on the host, not inside the container.
+
 ---
 
 ## Acknowledgments

@@ -1,0 +1,26 @@
+{
+  "name": "mc-runtime-test",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "25",
+      "jdkDistro": "tem",
+      "installGradle": "false",
+      "installMaven": "false"
+    }
+  },
+  "containerEnv": {
+    "ACTIONLINT_VERSION": "1.7.7",
+    "YQ_VERSION": "4.45.1"
+  },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends shellcheck && curl -sSfL \"https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_$(dpkg --print-architecture).tar.gz\" | sudo tar -xz -C /usr/local/bin actionlint && sudo curl -sSfL -o /usr/local/bin/yq \"https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_$(dpkg --print-architecture)\" && sudo chmod +x /usr/local/bin/yq && actionlint --version && shellcheck --version && yq --version && java -version",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "github.vscode-github-actions",
+        "timonwong.shellcheck"
+      ]
+    }
+  }
+}
