@@ -1,6 +1,10 @@
 {
   "name": "mc-runtime-test",
   "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  },
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/java:1": {
