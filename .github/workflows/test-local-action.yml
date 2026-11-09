@@ -13,9 +13,6 @@ name: Test local action
       modloader:
         description: Modloader to install (forge, neoforge, fabric)
         default: fabric
-      regex:
-        description: Regex to match the modloader jar
-        default: .*fabric.*
       mc-runtime-test:
         description: MC-Runtime-Test jar to download (none, lexforge, neoforge, fabric)
         default: fabric
@@ -64,7 +61,6 @@ jobs:
         with:
           mc: ${{ github.event.inputs.mc }}
           modloader: ${{ github.event.inputs.modloader }}
-          regex: ${{ github.event.inputs.regex }}
           mc-runtime-test: ${{ github.event.inputs.mc-runtime-test }}
           mc-runtime-test-version: ${{ github.event.inputs.mc-runtime-test-version }}
           java: ${{ github.event.inputs.java }}
