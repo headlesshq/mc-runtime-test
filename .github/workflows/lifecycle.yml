@@ -61,6 +61,7 @@ jobs:
         name: Construct matrices
         env:
           HEAD_REF: ${{ github.head_ref }}
+          INPUT_MC: ${{ github.event.inputs.mc }}
         run: |
           import os
           import json
@@ -81,7 +82,7 @@ jobs:
                 run_matrix['version'] = run_data[:3]
 
             case 'workflow_dispatch':
-              input_mc = '${{ github.event.inputs.mc }}'
+              input_mc = os.getenv('INPUT_MC', '')
               if input_mc == 'all':
                 run_matrix['version'] = run_data
               else:
