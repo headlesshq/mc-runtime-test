@@ -110,10 +110,8 @@ runs:
         distribution: temurin
 
     - name: Restore Java
-      env:
-        HMC_JAVA_PATH: ${{ steps.hmc-java.outputs.path }}
       run: |
-        echo "HMC_JAVA=$HMC_JAVA_PATH/bin/java" >> "$GITHUB_ENV"
+        echo "HMC_JAVA=${{ steps.hmc-java.outputs.path }}/bin/java" >> "$GITHUB_ENV"
         if [ -n "$MCRT_JAVA_HOME" ]; then
           echo "JAVA_HOME=$MCRT_JAVA_HOME" >> "$GITHUB_ENV"
           echo "$MCRT_JAVA_HOME/bin" >> "$GITHUB_PATH"
@@ -143,11 +141,8 @@ runs:
         key: ${{ runner.os }}-${{ inputs.mc }}-${{ inputs.modloader }}-hmc
 
     - name: Download ${{ inputs.modloader }}-${{ inputs.mc }}
-      env:
-        INPUT_MODLOADER: ${{ inputs.modloader }}
-        INPUT_MC: ${{ inputs.mc }}
       run: |
-        "$HMC_JAVA" -jar headlessmc.jar version install "$INPUT_MODLOADER" "$INPUT_MC"
+        "$HMC_JAVA" -jar headlessmc.jar version install ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
 
     - id: get-mcrt
@@ -171,11 +166,9 @@ runs:
 
     - if: inputs.fabric-gametest-api != 'none'
       name: Download fabric-gametest-api v${{ inputs.fabric-gametest-api }}
-      env:
-        INPUT_GAMETEST: ${{ inputs.fabric-gametest-api }}
       run: >
-        curl --create-dirs -o "run/mods/fabric-gametest-api-v1-${INPUT_GAMETEST}.jar"
-        "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/${INPUT_GAMETEST}/fabric-gametest-api-v1-${INPUT_GAMETEST}.jar"
+        curl --create-dirs -o run/mods/fabric-gametest-api-v1-${{ inputs.fabric-gametest-api }}.jar
+        https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/${{ inputs.fabric-gametest-api }}/fabric-gametest-api-v1-${{ inputs.fabric-gametest-api }}.jar
       shell: bash
 
     - name: Configure game
@@ -188,21 +181,13 @@ runs:
 
     - if: inputs.xvfb == 'true'
       name: Run game with xvfb
-      env:
-        INPUT_HMC_COMMAND: ${{ inputs.headlessmc-command }}
-        INPUT_MODLOADER: ${{ inputs.modloader }}
-        INPUT_MC: ${{ inputs.mc }}
       run: | # TODO: install xrandr conditionally per #22
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils libgl1-mesa-dri mesa-vulkan-drivers
-        xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline $INPUT_HMC_COMMAND "$INPUT_MODLOADER" "$INPUT_MC"
+        xvfb-run -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" "$HMC_JAVA" -Dhmc.xvfb.check=true -jar headlessmc.jar launch --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
 
     - if: inputs.xvfb != 'true'
       name: Run game
-      env:
-        INPUT_HMC_COMMAND: ${{ inputs.headlessmc-command }}
-        INPUT_MODLOADER: ${{ inputs.modloader }}
-        INPUT_MC: ${{ inputs.mc }}
       run: |
-        "$HMC_JAVA" -jar headlessmc.jar launch -lwjgl --offline $INPUT_HMC_COMMAND "$INPUT_MODLOADER" "$INPUT_MC"
+        "$HMC_JAVA" -jar headlessmc.jar launch -lwjgl --offline ${{ inputs.headlessmc-command }} ${{ inputs.modloader }} ${{ inputs.mc }}
       shell: bash
