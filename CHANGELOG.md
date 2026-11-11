@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.0.1](https://github.com/headlesshq/mc-runtime-test/compare/5.0.0...5.0.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **ci:** resolve actionlint findings in workflows ([#174](https://github.com/headlesshq/mc-runtime-test/issues/174)) ([e34ed3b](https://github.com/headlesshq/mc-runtime-test/commit/e34ed3b7beacf75dd54482bf5795c662a5fe6b1d))
+
 ## [5.0.0](https://github.com/headlesshq/mc-runtime-test/compare/4.5.2...5.0.0) (2026-10-12)
 
 

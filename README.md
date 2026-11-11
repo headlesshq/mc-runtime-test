@@ -89,7 +89,7 @@ distribution: "temurin"
           cp build/libs/&lt;your-mod&gt;.jar run/mods
 
       - name: Run MC test client
-        uses: headlesshq/mc-runtime-test@5.0.0 <!-- x-release-please-version -->
+        uses: headlesshq/mc-runtime-test@5.0.1 <!-- x-release-please-version -->
         with:
           mc: 26.1.1
           modloader: fabric
