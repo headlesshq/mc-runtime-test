@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.1.0](https://github.com/headlesshq/mc-runtime-test/compare/5.0.0...5.1.0) (2026-11-17)
+
+
+### Features
+
+* **launcher:** HeadlessMc 3.0.0-RC9 ([#178](https://github.com/headlesshq/mc-runtime-test/issues/178)) ([e19a4c0](https://github.com/headlesshq/mc-runtime-test/commit/e19a4c03ea63812a88e0aa8c0dade23545031fa3))
+
+
+### Bug Fixes
+
+* **ci:** resolve actionlint findings in workflows ([#174](https://github.com/headlesshq/mc-runtime-test/issues/174)) ([e34ed3b](https://github.com/headlesshq/mc-runtime-test/commit/e34ed3b7beacf75dd54482bf5795c662a5fe6b1d))
+
 ## [5.0.0](https://github.com/headlesshq/mc-runtime-test/compare/4.5.2...5.0.0) (2026-10-12)
 
 
